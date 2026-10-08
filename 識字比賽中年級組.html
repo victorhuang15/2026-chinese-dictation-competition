@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>識字比賽 中年級組</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg1: #fbf5ec;
+    --bg2: #fbf5ec;
+    --ink: #3d2e25;
+    --pink: #b5532a;
+    --pink-dark: #8f3f1e;
+    --green: #5d7a3a;
+    --green-dark: #46602a;
+    --orange: #7a6657;
+    --orange-dark: #5e4d41;
+    --blue: #a8672a;
+    --blue-dark: #7f4c1c;
+    --purple: #b5532a;
+    --card: #ffffff;
+    --shadow: rgba(84, 52, 28, 0.10);
+    --hanzi: "LXGW WenKai TC", "BiauKai", "DFKai-SB", "標楷體", "Kaiti TC", "STKaiti", "KaiTi", serif;
+    --kai: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Segoe UI", system-ui, sans-serif;
+    --round: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: var(--round), var(--kai);
+    color: var(--ink);
+    background: var(--bg1);
+    overflow-x: hidden;
+    min-height: 100vh;
+    user-select: none;
+  }
+
+  /* floating background decorations */
+  body::before { content: ""; position: fixed; inset: 0; z-index: -1; background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 100%); }
+  .deco { position: fixed; pointer-events: none; font-size: 42px; opacity: .55; animation: float 7s ease-in-out infinite; z-index: 0; }
+  .deco:nth-child(1) { top: 6%;  left: 5%;  animation-delay: 0s; }
+  .deco:nth-child(2) { top: 14%; right: 7%; animation-delay: 1.5s; }
+  .deco:nth-child(3) { bottom: 10%; left: 8%; animation-delay: 3s; }
+  .deco:nth-child(4) { bottom: 16%; right: 6%; animation-delay: 4.5s; }
+  .deco:nth-child(5) { top: 48%; left: 2%; animation-delay: 2.2s; }
+  .deco:nth-child(6) { top: 55%; right: 2%; animation-delay: 5.2s; }
+  @keyframes float { 0%,100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-18px) rotate(6deg); } }
+
+  .screen { display: none; position: relative; z-index: 1; min-height: 100vh; padding: 20px 16px 28px; flex-direction: column; align-items: center; justify-content: center; }
+  .screen.active { display: flex; }
+
+  h1 { font-family: var(--kai); font-size: clamp(44px, 10vw, 76px); margin: 0 0 6px; color: var(--pink-dark);
+       text-shadow: 3px 3px 0 #fff, 6px 6px 0 transparent; letter-spacing: 4px; text-align: center; }
+  .subtitle { font-family: var(--kai); font-size: clamp(18px, 4vw, 24px); margin: 0 0 22px; text-align: center; }
+
+  .mascot { font-size: 88px; animation: bounce 1.6s ease-in-out infinite; line-height: 1; margin-bottom: 8px; }
+  /* mascot sitting on the same line as the page title */
+  .title-row { display: flex; align-items: center; justify-content: center; gap: clamp(6px, 2vw, 16px); }
+  .title-row .mascot { font-size: clamp(46px, 11vw, 80px); margin-bottom: 0; flex-shrink: 0; }
+  .title-row h1 { margin-bottom: 0; }
+  .title-row .medal { margin-bottom: 0; min-width: 0; }
+  @media (max-width: 520px) { .title-row .medal { font-size: 22px; } }
+  @keyframes bounce { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-12px) scale(1.05); } }
+
+  .panel { background: var(--card); border-radius: 32px; padding: 22px 26px; box-shadow: 0 10px 0 var(--shadow); border: 4px solid #f6ecdd;
+           max-width: 520px; width: 100%; font-family: var(--kai); font-size: 20px; line-height: 1.7; }
+  .panel ul { margin: 0; padding-left: 0; list-style: none; }
+  .panel li { padding: 3px 0; }
+  .best { margin-top: 14px; text-align: center; font-size: 22px; color: var(--orange-dark); }
+
+  .btn { font-family: var(--kai); font-weight: 700; font-size: clamp(22px, 5vw, 30px); border: none; cursor: pointer; color: #fff;
+         padding: 14px 34px; border-radius: 999px; margin: 8px; transition: transform .08s, box-shadow .08s; letter-spacing: 2px; }
+  .btn:active { transform: translateY(6px); }
+  .btn-pink   { background: var(--pink);   box-shadow: 0 7px 0 var(--pink-dark); }
+  .btn-green  { background: var(--green);  box-shadow: 0 7px 0 var(--green-dark); }
+  .btn-orange { background: var(--orange); box-shadow: 0 7px 0 var(--orange-dark); }
+  .btn-blue   { background: var(--blue);   box-shadow: 0 7px 0 var(--blue-dark); }
+  .btn:active.btn-pink, .btn:active.btn-green, .btn:active.btn-orange, .btn:active.btn-blue { box-shadow: 0 1px 0 rgba(0,0,0,.15); }
+  .btn-small { font-size: 18px; padding: 8px 20px; }
+  .row { display: flex; flex-wrap: wrap; justify-content: center; margin-top: 18px; }
+
+  /* ===== game screen ===== */
+  #game { justify-content: flex-start; padding-top: 16px; }
+  .topbar { width: 100%; max-width: 760px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .pill { background: #fff; border-radius: 999px; padding: 8px 18px; font-size: 24px; font-weight: 800; box-shadow: 0 5px 0 var(--shadow); white-space: nowrap; }
+  .pill .num { color: var(--green-dark); }
+  .pill.time .num { color: var(--blue-dark); }
+  .pill.time.hurry { animation: shake .5s infinite; }
+  .pill.time.hurry .num { color: #b23a2a; }
+  @keyframes shake { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+  .icon-btn { background: #fff; border: none; border-radius: 50%; width: 48px; height: 48px; font-size: 24px; box-shadow: 0 5px 0 var(--shadow); cursor: pointer; flex-shrink: 0; }
+  .icon-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--shadow); }
+
+  .timebar { width: 100%; max-width: 760px; height: 22px; background: #fff; border-radius: 999px; margin: 14px 0 6px; overflow: hidden; box-shadow: inset 0 3px 0 rgba(0,0,0,.06); position: relative; }
+  .timebar-fill { height: 100%; width: 100%; border-radius: 999px; background: repeating-linear-gradient(45deg, var(--blue) 0 14px, #a8672a 14px 28px); transition: width .25s linear; }
+  .timebar.hurry .timebar-fill { background: repeating-linear-gradient(45deg, #b23a2a 0 14px, #b23a2a 14px 28px); }
+  .runner { position: absolute; top: -6px; font-size: 26px; transition: left .25s linear; transform: translateX(-50%) scaleX(-1); }
+
+  .stage { flex: 1; width: 100%; max-width: 760px; display: flex; align-items: center; justify-content: center; }
+  .card { background: var(--card); border-radius: 44px; width: 100%; min-height: min(52vh, 420px); display: flex; flex-direction: column; align-items: center; justify-content: center;
+          box-shadow: 0 14px 0 var(--shadow); border: 6px dashed #dccbb5; position: relative; padding: 24px; }
+  .card .word { font-family: var(--kai); font-weight: 400; line-height: 1.1; letter-spacing: .08em; white-space: nowrap; color: var(--ink); }
+  .card .corner { position: absolute; font-size: 34px; }
+  .card .c1 { top: 14px; left: 18px; } .card .c2 { top: 14px; right: 18px; } .card .c3 { bottom: 14px; left: 18px; } .card .c4 { bottom: 14px; right: 18px; }
+  .card.pop { animation: pop .35s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes pop { 0% { transform: scale(.6) rotate(-4deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+  .card.fly-right { animation: flyR .25s ease-in forwards; }
+  .card.fly-left  { animation: flyL .25s ease-in forwards; }
+  @keyframes flyR { to { transform: translateX(60%) rotate(14deg); opacity: 0; } }
+  @keyframes flyL { to { transform: translateX(-60%) rotate(-14deg); opacity: 0; } }
+
+  .answer-row { display: flex; gap: 18px; width: 100%; max-width: 760px; margin-top: 22px; }
+  .answer-row .btn { flex: 1; margin: 0; padding: 20px 10px; font-size: clamp(24px, 6vw, 36px); border-radius: 30px; }
+  .hint-keys { margin-top: 12px; font-size: 15px; opacity: .6; text-align: center; font-family: var(--kai); }
+
+  .burst { position: fixed; pointer-events: none; font-size: 44px; z-index: 50; animation: burst .8s ease-out forwards; }
+  @keyframes burst { 0% { transform: translate(-50%,-50%) scale(.4); opacity: 1; } 100% { transform: translate(-50%,-180%) scale(1.3); opacity: 0; } }
+
+  /* countdown */
+  #countdown .big { font-size: 180px; font-weight: 800; color: var(--pink); text-shadow: 6px 6px 0 #fff; animation: pop .5s; font-family: var(--round); }
+
+  /* pause overlay */
+  .overlay { position: fixed; inset: 0; background: rgba(84,52,28,.45); display: none; align-items: center; justify-content: center; z-index: 40; padding: 16px; }
+  .overlay.show { display: flex; }
+  .overlay .panel { text-align: center; }
+
+  /* result */
+  .score-big { font-size: clamp(80px, 20vw, 130px); font-weight: 800; color: var(--green-dark); line-height: 1; font-family: var(--round); text-shadow: 5px 5px 0 #fff; }
+  .stars { font-size: 50px; letter-spacing: 6px; margin: 6px 0; }
+  .medal { font-family: var(--kai); font-size: 28px; margin-bottom: 8px; text-align: center; }
+  .stats { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 10px 0; }
+  .stats .pill { font-size: 20px; }
+  .review { max-width: 760px; width: 100%; margin-top: 14px; }
+  .review h3 { font-family: var(--kai); font-size: 24px; margin: 8px 0; text-align: center; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .chip { background: #fff; border-radius: 20px; padding: 8px 14px; box-shadow: 0 4px 0 var(--shadow); text-align: center; min-width: 96px; cursor: pointer; }
+  .chip .w { font-family: var(--kai); font-size: 32px; line-height: 1.2; }
+  .chip .p { font-size: 14px; color: var(--pink-dark); font-family: sans-serif; }
+  .chip .e { font-size: 12px; opacity: .7; font-family: sans-serif; }
+  .chip.known { border: 3px solid #d7e2c3; }
+  .chip.skipped { border: 3px solid #e6b8a6; }
+
+  /* word bank */
+  .bank { max-width: 900px; width: 100%; }
+  .bank .chip { cursor: default; }
+
+  /* practice / flashcard */
+  .reveal { margin-top: 18px; text-align: center; min-height: 70px; }
+  .reveal .p { font-size: 30px; color: var(--pink-dark); font-family: sans-serif; }
+  .reveal .e { font-size: 20px; opacity: .75; font-family: sans-serif; }
+
+  /* name entry */
+  .name-input { font-family: var(--kai); font-size: 32px; text-align: center; width: 100%; padding: 12px 18px; border-radius: 24px;
+                border: 4px solid #dccbb5; outline: none; color: var(--ink); background: #ffffff; user-select: text; }
+  .name-input:focus { border-color: var(--pink); }
+  .name-err { color: #b23a2a; font-size: 18px; min-height: 26px; text-align: center; margin-top: 6px; }
+  .players { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
+  .player-chip { background: #f6ecdd; border: 3px solid #dccbb5; border-radius: 999px; padding: 4px 14px; font-family: var(--kai); font-size: 20px; cursor: pointer; color: var(--ink); }
+  .player-chip:active { transform: scale(.95); }
+  .who { font-family: var(--kai); font-size: 20px; max-width: 30vw; overflow: hidden; text-overflow: ellipsis; }
+
+  /* leaderboard */
+  .tabs { display: flex; gap: 10px; justify-content: center; margin-bottom: 14px; }
+  .tab { font-family: var(--kai); font-size: 20px; border: none; border-radius: 999px; padding: 8px 20px; cursor: pointer; background: #fff; color: var(--ink); box-shadow: 0 4px 0 var(--shadow); }
+  .tab.on { background: var(--purple); color: #fff; box-shadow: 0 4px 0 #8f3f1e; }
+  .lb { max-width: 560px; width: 100%; }
+  .lb-row { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 22px; padding: 10px 18px; margin-bottom: 10px; box-shadow: 0 5px 0 var(--shadow); border: 4px solid transparent; }
+  .lb-row.me { border-color: var(--pink); }
+  .lb-rank { font-size: 30px; width: 44px; text-align: center; font-weight: 800; font-family: var(--round); color: var(--purple); flex-shrink: 0; }
+  .lb-name { flex: 1; min-width: 0; font-family: var(--kai); font-size: 24px; }
+  .lb-name .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-date { font-size: 13px; opacity: .6; font-family: sans-serif; }
+  .lb-score { font-size: 30px; font-weight: 800; color: var(--green-dark); font-family: var(--round); white-space: nowrap; }
+  .lb-score small { font-size: 16px; font-family: var(--kai); color: var(--ink); }
+  .lb-empty { text-align: center; font-family: var(--kai); font-size: 22px; padding: 20px; }
+  .rank-line { font-family: var(--kai); font-size: 22px; text-align: center; color: var(--purple); margin-top: 4px; }
+
+  /* picture ↔ word matching */
+  #match { justify-content: flex-start; padding-top: 16px; }
+  .m-title { font-family: var(--kai); font-size: 22px; text-align: center; margin: 12px 0 4px; }
+  .m-board { position: relative; width: 100%; max-width: 620px; display: grid; grid-template-columns: 1fr 1fr; column-gap: clamp(56px, 16vw, 150px); row-gap: 12px; margin-top: 10px; touch-action: none; }
+  .m-board svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 2; }
+  .m-col { display: flex; flex-direction: column; gap: 12px; }
+  .m-item { position: relative; z-index: 1; background: #fff; border: 4px solid #fff; border-radius: 24px; min-height: 84px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 6px 0 var(--shadow); cursor: pointer; padding: 6px; color: var(--ink); font: inherit; transition: transform .1s; }
+  .m-item .pic { font-size: 44px; line-height: 1.1; }
+  .m-item .en { font-size: 12px; opacity: .7; font-family: sans-serif; text-align: center; }
+  .m-item .zh { font-family: var(--kai); font-size: clamp(28px, 7vw, 38px); letter-spacing: .05em; }
+  .m-item.sel { border-color: var(--blue); transform: scale(1.05); box-shadow: 0 6px 0 var(--blue-dark); }
+  .m-item.done { cursor: default; opacity: .9; }
+  .m-item.wrong { animation: shake .35s 2; border-color: #b23a2a; }
+  .m-foot { margin-top: 18px; text-align: center; min-height: 120px; }
+  .m-foot .msg { font-family: var(--kai); font-size: 26px; }
+  .m-stars { font-size: 40px; }
+  .quit-btn { background: #fff; border: none; border-radius: 999px; padding: 8px 16px; font-family: var(--kai); font-size: 18px; font-weight: 700; color: var(--ink);
+              box-shadow: 0 5px 0 var(--shadow); cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+  .quit-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--shadow); }
+  .post-banner { display: none; width: 100%; max-width: 620px; margin-top: 12px; background: #fff; border-radius: 22px; padding: 10px 16px;
+                 box-shadow: 0 5px 0 var(--shadow); border: 4px dashed #dccbb5; font-family: var(--kai); font-size: 20px; text-align: center; line-height: 1.5; }
+  .post-banner.show { display: block; }
+  .post-banner b { color: var(--green-dark); font-size: 26px; }
+  .round-wrong { font-family: var(--kai); font-size: 18px; margin-top: 6px; }
+  .confuse { max-width: 560px; width: 100%; margin: 6px auto 0; }
+  .confuse-row { display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; border-radius: 18px; padding: 6px 14px; margin-bottom: 8px;
+                 box-shadow: 0 4px 0 var(--shadow); font-family: var(--kai); font-size: 20px; flex-wrap: wrap; }
+  .confuse-row .pic { font-size: 30px; }
+  .confuse-row .bad { color: #b23a2a; text-decoration: line-through; }
+  .confuse-row .good { color: var(--green-dark); font-weight: 700; }
+  .chip .cnt { font-size: 13px; color: #b23a2a; font-family: var(--kai); }
+
+  /* error-rate analysis chart */
+  .analysis { max-width: 760px; width: 100%; margin-top: 18px; background: #fff; border-radius: 28px; padding: 16px 16px 12px; box-shadow: 0 8px 0 var(--shadow); }
+  .analysis h3 { font-family: var(--kai); font-size: 24px; margin: 0; text-align: center; }
+  .analysis .sub { text-align: center; font-size: 14px; opacity: .7; margin: 2px 0 10px; font-family: var(--kai); }
+  .chart { position: relative; margin-top: 22px; display: grid; grid-template-columns: 40px 1fr; gap: 6px; }
+  .y-axis { position: relative; height: 200px; font-size: 12px; color: #8a7767; font-family: sans-serif; }
+  .y-axis span { position: absolute; right: 2px; transform: translateY(-50%); }
+  .plot { position: relative; height: 200px; display: flex; align-items: flex-end; gap: 2px; border-bottom: 2px solid #dccbb5; }
+  .gridline { position: absolute; left: 0; right: 0; border-top: 1px dashed #ecdfcd; }
+  .bar-col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; cursor: pointer; position: relative; z-index: 1; min-width: 0; }
+  .bar-col .val { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: 700; font-family: sans-serif; color: var(--ink); white-space: nowrap; }
+  .bar { position: relative; width: min(70%, 36px); background: #8f3f1e; border-radius: 4px 4px 0 0; min-height: 3px; transition: height .6s cubic-bezier(.3,1.3,.5,1); }
+  .bar-col:hover .bar, .bar-col.on .bar { background: #6f2f15; }
+  .x-labels { grid-column: 2; display: flex; gap: 2px; }
+  .x-labels div { flex: 1; min-width: 0; display: flex; justify-content: center; padding-top: 6px; }
+  .x-labels span { font-family: var(--kai); font-size: 20px; writing-mode: vertical-rl; letter-spacing: 2px; line-height: 1; color: var(--ink); }
+  .x-labels .emo { font-size: 16px; writing-mode: horizontal-tb; }
+  .tip { position: absolute; z-index: 5; background: var(--ink); color: #fff; border-radius: 12px; padding: 6px 10px; font-size: 14px; pointer-events: none; white-space: nowrap; transform: translate(-50%, -110%); display: none; font-family: sans-serif; }
+  .tip b { font-family: var(--kai); font-size: 18px; }
+  .a-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 15px; }
+  .a-table th, .a-table td { padding: 5px 6px; border-bottom: 1px solid #ecdfcd; text-align: center; }
+  .a-table td:first-child { font-family: var(--kai); font-size: 20px; }
+  .link-btn { background: none; border: none; color: var(--blue-dark); font-size: 15px; cursor: pointer; font-family: var(--kai); text-decoration: underline; }
+  .reveal .emo { font-size: 54px; line-height: 1.1; }
+
+  /* save-to-folder status bar */
+  .save-bar { max-width: 620px; width: 100%; margin: 14px auto 0; background: #fff; border-radius: 20px; padding: 10px 14px; box-shadow: 0 5px 0 var(--shadow);
+              display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; font-family: var(--kai); font-size: 18px; text-align: center; }
+  .save-bar.ok { border: 3px solid #d7e2c3; }
+  .save-bar.warn { border: 3px solid #e5d3a8; }
+  .save-bar.err { border: 3px solid #e6b8a6; }
+  .save-bar .btn { margin: 0; }
+  #matchMenu .panel { max-height: 92vh; overflow-y: auto; text-align: center; }
+  .mm-sec { font-family: var(--kai); font-size: 22px; margin: 16px 0 6px; padding-top: 12px; border-top: 3px dashed #ecdfcd; }
+  .player-chip.on { background: var(--purple); border-color: #8f3f1e; color: #fff; }
+  .mm-info { font-family: var(--kai); font-size: 18px; margin: 8px 0; }
+  .mm-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+  .mm-chip { background: #f6ecdd; border-radius: 14px; padding: 3px 10px; font-family: var(--kai); font-size: 20px; }
+  .mm-chip small { font-size: 13px; color: #b23a2a; margin-left: 3px; }
+  .load-msg { font-family: var(--kai); font-size: 16px; color: var(--green-dark); min-height: 22px; text-align: center; margin-top: 6px; white-space: pre-line; }
+  .load-msg.err { color: #b23a2a; }
+  #saveOverlay .panel { max-height: 92vh; overflow-y: auto; }
+  .save-info { text-align: left; font-size: 17px; line-height: 1.7; }
+  .save-info code { background: #f6ecdd; border-radius: 6px; padding: 1px 6px; font-size: 15px; }
+
+  /* bilingual labels */
+  .en { display: block; font-family: var(--round); font-size: max(12px, .55em); font-weight: 600; letter-spacing: .02em; line-height: 1.15; margin-top: 2px; opacity: .92; }
+  .en-line { display: block; font-family: var(--round); font-size: 14px; font-weight: 600; opacity: .7; letter-spacing: 0; line-height: 1.35; }
+  .en-in { font-size: 13px; opacity: .7; font-family: var(--round); }
+  .h1-en { font-family: var(--round); font-size: clamp(18px, 4.5vw, 26px); font-weight: 800; color: var(--pink-dark); opacity: .85; margin: -4px 0 8px; text-align: center; }
+  .tab .en { font-size: 12px; }
+  .quit-btn .en { font-size: 11px; }
+  .m-foot .msg { white-space: pre-line; }
+  .home-grid .btn { min-width: min(240px, 42vw); }
+  .stats .pill { white-space: normal; max-width: 100%; text-align: center; }
+  #practice .answer-row { gap: 10px; }
+  #practice .answer-row .btn { font-size: clamp(17px, 4.6vw, 30px); padding: 16px 4px; letter-spacing: 0; white-space: nowrap; }
+
+  /* practice / word bank hub */
+  .hub { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; width: 100%; max-width: 820px; margin-top: 12px; }
+  .hub-card { background: #fff; border: 4px solid #f6ecdd; border-radius: 28px; padding: 18px 16px; box-shadow: 0 8px 0 var(--shadow); cursor: pointer;
+              color: var(--ink); font: inherit; text-align: center; transition: transform .1s; }
+  .hub-card:hover { transform: translateY(-3px); }
+  .hub-card:active { transform: translateY(5px); box-shadow: 0 2px 0 var(--shadow); }
+  .hub-card .ico { font-size: 56px; line-height: 1.1; }
+  .hub-card .t { font-family: var(--kai); font-size: 30px; font-weight: 700; }
+  .hub-card .t-en { font-family: var(--round); font-weight: 800; font-size: 18px; color: var(--pink-dark); }
+  .hub-card .d { font-family: var(--kai); font-size: 16px; margin-top: 6px; opacity: .85; }
+
+  /* contest options (name screen) + warm-up */
+  .opt { margin-top: 12px; text-align: center; }
+  .opt-label { font-size: 17px; opacity: .8; }
+  .seg { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
+  .seg button { font-family: var(--kai); font-size: 18px; border: 3px solid #dccbb5; background: #fff; color: var(--ink); border-radius: 18px; padding: 6px 14px; cursor: pointer; }
+  .seg button.on { background: var(--purple); border-color: #8f3f1e; color: #fff; }
+  .seg button .en { font-size: 12px; }
+  .warm-banner { display: none; width: 100%; max-width: 760px; margin-top: 12px; background: #f8f5e6; border: 4px dashed var(--orange); border-radius: 22px; padding: 8px 14px;
+                 font-family: var(--kai); font-size: 22px; text-align: center; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  #game.warm .warm-banner { display: flex; }
+  #game.warm #timebar, #game.warm #pauseBtn, #game.warm #scorePill, #game.warm #timePill { visibility: hidden; }
+  .warm-banner .btn { margin: 0; }
+
+  #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
+
+  @media (max-width: 520px) {
+    .pill { font-size: 18px; padding: 6px 12px; }
+    .icon-btn { width: 40px; height: 40px; font-size: 20px; }
+    .answer-row { gap: 12px; }
+    .card .corner { font-size: 24px; }
+    .mascot { font-size: 70px; }
+  }
+
+  /* ===== plain / professional theme (overrides the playful defaults above) ===== */
+  body { font-family: var(--kai); }
+  body::before { background: var(--bg1); }
+  .deco, .mascot, .card .corner, .runner, .hub-card .ico, .burst, #confetti { display: none !important; }
+  .card.pop { animation: pop .2s ease-out; }
+  .card.fly-right { animation: flyR .2s ease-in forwards; } .card.fly-left { animation: flyL .2s ease-in forwards; }
+  .m-item.wrong, .pill.time.hurry { animation: shake .35s 2; }
+  #countdown .big { animation: pop .3s; color: var(--pink); text-shadow: none; }
+
+  h1 { font-family: var(--kai); font-weight: 700; font-size: clamp(28px, 5.5vw, 42px) !important; color: var(--ink); text-shadow: none; letter-spacing: 1px; }
+  .h1-en { color: #7a6657; font-weight: 600; font-size: clamp(14px, 3vw, 18px); margin: 2px 0 12px; opacity: 1; }
+  .subtitle { font-family: var(--kai); font-size: clamp(15px, 3vw, 18px); color: #5e4d41; }
+  .en, .en-line, .en-in { font-weight: 500; }
+
+  .panel, .card, .hub-card, .analysis, .lb-row, .chip, .pill, .m-item, .save-bar, .confuse-row, .post-banner, .warm-banner, .tab, .quit-btn, .icon-btn, .timebar {
+    border-radius: 10px; box-shadow: 0 1px 2px rgba(84, 52, 28, .08); border: 1px solid #e6d9c6; }
+  .panel { font-size: 17px; line-height: 1.6; padding: 20px 24px; }
+  .panel li { padding: 5px 0; border-bottom: 1px solid #f3e9da; } .panel li:last-child { border-bottom: none; }
+  .best { color: var(--pink); font-size: 17px; font-weight: 700; }
+  .card { border: 1px solid #dccbb5; box-shadow: 0 2px 6px rgba(84, 52, 28, .08); }
+  .card .word, .m-item .zh, .chip .w, .x-labels span, .mm-chip, .confuse-row .bad, .confuse-row .good, .a-table td:first-child, .tip b, .lb-name .n, .name-input { font-family: var(--hanzi); }
+
+  .btn { font-family: var(--kai); font-weight: 700; border-radius: 8px; box-shadow: none !important; letter-spacing: .5px; font-size: clamp(16px, 3.4vw, 20px); padding: 12px 26px; margin: 6px; border: 1px solid transparent; }
+  .btn:active { transform: translateY(1px); filter: brightness(.94); }
+  .btn-small { font-size: 15px; padding: 9px 16px; }
+  .btn-pink { background: var(--pink); }
+  .btn-green { background: var(--green); }
+  .btn-blue { background: #fff; color: var(--pink); border-color: var(--pink); }
+  .btn-orange { background: #fff; color: #5e4d41; border-color: #dccbb5; }
+  .btn .en { opacity: .85; }
+  .answer-row .btn { border-radius: 10px; font-size: clamp(20px, 5vw, 28px); padding: 18px 10px; }
+  .quit-btn, .icon-btn { font-family: var(--kai); font-size: 15px; padding: 7px 14px; border-radius: 8px; }
+  .quit-btn:active, .icon-btn:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(84, 52, 28, .08); }
+
+  .pill { font-family: var(--kai); font-size: 17px; font-weight: 700; padding: 7px 14px; }
+  .pill .num { color: var(--pink); } .pill.time .num { color: var(--ink); } .pill.time.hurry .num { color: #b23a2a; }
+  .timebar { height: 12px; background: #ecdfcd; box-shadow: none; border: none; border-radius: 6px; }
+  .timebar-fill { background: var(--pink); border-radius: 6px; }
+  .timebar.hurry .timebar-fill { background: #b23a2a; }
+  .stars, .m-stars { color: #c98a1a; letter-spacing: 4px; font-size: 34px; }
+  .score-big { color: var(--pink); text-shadow: none; }
+  .medal { font-family: var(--kai); font-weight: 700; font-size: 22px; }
+  .rank-line { color: #5e4d41; font-family: var(--kai); font-size: 17px; }
+
+  .tab { box-shadow: none; } .tab.on { background: var(--pink); box-shadow: none; border-color: var(--pink); }
+  .lb-row.me { border: 2px solid var(--pink); } .lb-rank { color: #7a6657; font-size: 22px; } .lb-score { color: var(--pink); font-size: 24px; }
+  .name-input { border: 1px solid #dccbb5; border-radius: 8px; font-size: 26px; } .name-input:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(181, 83, 42, .15); }
+  .player-chip, .seg button { border: 1px solid #dccbb5; border-radius: 8px; background: #fff; font-family: var(--kai); font-size: 16px; }
+  .player-chip.on, .seg button.on { background: var(--pink); border-color: var(--pink); color: #fff; }
+  .mm-chip { border-radius: 6px; background: #f6ecdd; }
+  .mm-sec { border-top: 1px solid #ecdfcd; }
+  .chip { box-shadow: none; } .chip.known { border: 1px solid #cddbb6; } .chip.skipped { border: 1px solid #e6b8a6; }
+  .chip .p { color: #a8672a; }
+
+  .hub-card { padding: 22px 18px; text-align: left; border-left: 4px solid var(--pink); }
+  .hub-card:hover { transform: none; border-color: var(--pink); background: #fdf8f0; }
+  .hub-card:active { transform: translateY(1px); box-shadow: none; }
+  .hub-card .t { font-family: var(--kai); font-size: 22px; } .hub-card .t-en { color: #7a6657; font-size: 15px; font-weight: 600; } .hub-card .d { font-size: 14px; }
+
+  .m-item { min-height: 76px; border-width: 2px; }
+  .m-item.sel { transform: none; box-shadow: 0 0 0 3px rgba(181, 83, 42, .2); border-color: var(--pink); }
+  .m-item .pic { font-size: 38px; }
+  .m-title { font-family: var(--kai); font-size: 18px; font-weight: 700; }
+  .post-banner, .warm-banner { border-style: solid; font-family: var(--kai); font-size: 17px; }
+  .post-banner b { color: var(--pink); font-size: 20px; }
+  .analysis h3, .review h3 { font-family: var(--kai); font-size: 19px; }
+  .bar { border-radius: 3px 3px 0 0; }
+  .save-bar { font-family: var(--kai); font-size: 15px; } .save-bar.ok { border-color: #cddbb6; } .save-bar.warn { border-color: #e5d3a8; } .save-bar.err { border-color: #e6b8a6; }
+  .overlay .panel { border-radius: 12px; }
+  .hint-keys, .m-foot .msg, .mm-info, .round-wrong, .lb-empty, .load-msg, .name-err, .opt-label { font-family: var(--kai); }
+  .m-foot .msg { font-size: 20px; font-weight: 700; }
+  .title-row { gap: 0; }
+</style>
+</head>
+<body>
+  <div class="deco"></div><div class="deco"></div><div class="deco"></div>
+  <div class="deco"></div><div class="deco"></div><div class="deco"></div>
+  <canvas id="confetti"></canvas>
+
+  <!-- ===== HOME ===== -->
+  <section class="screen active" id="home">
+    <div class="title-row"><div class="mascot"></div><h1>識字比賽・中年級組</h1></div>
+    <div class="h1-en">Chinese Character Contest · Middle Grades</div>
+    <p class="subtitle">漢字文化節・中年級組 認字比賽 練習<span class="en-line">Chinese Character Festival · Middle Grades · Character Recognition Practice</span></p>
+    <div class="panel">
+      <ul>
+        <li> 比賽時間：<b>1 分鐘</b><span class="en-line">Time limit: 1 minute</span></li>
+        <li> 看到字，大聲唸出來！<span class="en-line">Read each word out loud!</span></li>
+        <li> 唸對了，按「<b>我認識</b>」<span class="en-line">Read it right? Tap “I know it”</span></li>
+        <li> 不認識也沒關係，按「<b>跳過</b>」<span class="en-line">Don’t know it? That’s OK — tap “Skip”</span></li>
+        <li> 認識越多組，分數越高！<span class="en-line">The more words you know, the higher your score!</span></li>
+        <li> 一個詞算一組，例如「學生」<span class="en-line">Each word counts as one, e.g. “學生”</span></li>
+      </ul>
+      <div class="best" id="bestLine"></div>
+    </div>
+    <div class="row">
+      <button class="btn btn-pink" id="startBtn"> 開始比賽<small class="en">Start Contest</small></button>
+    </div>
+    <div class="row home-grid">
+      <button class="btn btn-green" id="lbBtn"> 排行榜<small class="en">Leaderboard</small></button>
+      <button class="btn btn-blue" id="hubBtn"> 練習 / 題庫<small class="en">Practice &amp; Word Bank</small></button>
+    </div>
+    <div class="row home-grid" style="margin-top:4px">
+      <button class="btn btn-orange btn-small" id="saveSetBtn"> 存檔設定<small class="en">Save Settings</small></button>
+      <button class="btn btn-orange btn-small" id="loadBtn"> 從資料夾載入紀錄<small class="en">Load Records from Folder</small></button>
+    </div>
+    <div class="load-msg" id="homeLoadMsg"></div>
+  </section>
+
+  <!-- ===== PRACTICE / WORD BANK HUB ===== -->
+  <section class="screen" id="hub" style="justify-content:flex-start">
+    <div class="title-row"><div class="mascot"></div><h1 style="font-size:clamp(36px,8vw,56px)">練習 / 題庫</h1></div>
+    <div class="h1-en">Practice &amp; Word Bank</div>
+    <div class="hub">
+      <button class="hub-card" id="practiceAllBtn">
+        <div class="ico"></div><div class="t">字卡練習</div><div class="t-en">Flashcards</div>
+        <div class="d">一次看一個字，可以看答案，記下會不會<span class="en-line">One word at a time — check the answer and mark what you know</span></div>
+      </button>
+      <button class="hub-card" id="matchAllBtn">
+        <div class="ico"></div><div class="t">看圖連線</div><div class="t-en">Picture Matching</div>
+        <div class="d">把圖片和漢字連起來，也能複習之前的錯題<span class="en-line">Match pictures to words, or review past mistakes</span></div>
+      </button>
+      <button class="hub-card" id="bankBtn">
+        <div class="ico"></div><div class="t">看題庫</div><div class="t-en">Word Bank</div>
+        <div class="d">全部 <span id="bankCount"></span> 組漢字的拼音、英文和圖片<span class="en-line">All words with pinyin, English and pictures</span></div>
+      </button>
+    </div>
+    <div class="row"><button class="btn btn-orange btn-small" id="hubBack"> 回首頁<small class="en">Home</small></button></div>
+  </section>
+
+  <!-- ===== NAME ENTRY ===== -->
+  <section class="screen" id="nameScreen">
+    <div class="title-row"><div class="mascot"></div><h1 style="font-size:clamp(32px,8vw,56px)">你叫什麼名字？</h1></div>
+    <div class="h1-en">What’s your name?</div>
+    <div class="panel">
+      <input class="name-input" id="nameInput" maxlength="10" placeholder="輸入名字 Enter name" autocomplete="off">
+      <div class="name-err" id="nameErr"></div>
+      <div id="playersWrap" style="display:none">
+        <div style="text-align:center;font-size:18px;opacity:.7"> 或點選以前的參賽者<span class="en-line">or pick a past player</span></div>
+        <div class="players" id="players"></div>
+      </div>
+      <div class="opt">
+        <div class="opt-label">題目順序<span class="en-line">Question order</span></div>
+        <div class="seg" id="optOrder">
+          <button data-v="official"> 初賽考題順序<small class="en">Official order</small></button>
+          <button data-v="random"> 隨機<small class="en">Random</small></button>
+        </div>
+      </div>
+      <div class="opt">
+        <div class="opt-label">練習題（不計分）<span class="en-line">Sample questions (not scored)</span></div>
+        <div class="seg" id="optWarm">
+          <button data-v="on"> 先做 5 題<small class="en">5 samples first</small></button>
+          <button data-v="off"> 直接開始<small class="en">Start right away</small></button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn btn-orange btn-small" id="nameBack"> 回首頁<small class="en">Home</small></button>
+      <button class="btn btn-pink" id="nameGo"> 出發！<small class="en">Let’s Go!</small></button>
+    </div>
+  </section>
+
+  <!-- ===== LEADERBOARD ===== -->
+  <section class="screen" id="leaderboard" style="justify-content:flex-start">
+    <div class="title-row"><div class="mascot"></div><h1 style="font-size:clamp(36px,8vw,56px)">排行榜</h1></div>
+    <div class="h1-en">Leaderboard</div>
+    <div class="tabs">
+      <button class="tab on" data-mode="best"> 每人最佳<small class="en">Personal Best</small></button>
+      <button class="tab" data-mode="all"> 全部紀錄<small class="en">All Games</small></button>
+    </div>
+    <div class="lb" id="lbList"></div>
+    <div class="row">
+      <button class="btn btn-pink" id="lbBack"> 回首頁<small class="en">Home</small></button>
+      <button class="btn btn-orange btn-small" id="lbClear"> 清除排行榜<small class="en">Clear Leaderboard</small></button>
+    </div>
+  </section>
+
+  <!-- ===== COUNTDOWN ===== -->
+  <section class="screen" id="countdown">
+    <div class="big" id="cdNum">3</div>
+    <p class="subtitle">準備好了嗎？正式開始囉！<span class="en-line">Ready? GO!!!</span></p>
+  </section>
+
+  <!-- ===== GAME ===== -->
+  <section class="screen" id="game">
+    <div class="topbar">
+      <button class="quit-btn" id="pauseBtn" title="暫停 Pause">暫停<small class="en">Pause</small></button>
+      <div class="pill who" id="whoPill"></div>
+      <div class="pill" id="scorePill">得分 <span class="num" id="scoreNum">0</span></div>
+      <div class="pill time" id="timePill">時間 <span class="num" id="timeNum">1:00</span></div>
+    </div>
+    <div class="warm-banner" id="warmBanner">
+      <div> 練習題 <b id="warmN">1</b> / <span id="warmTotal">5</span>・不計分<span class="en-line">Sample question — does NOT count towards your score</span></div>
+      <button class="btn btn-blue btn-small" id="warmSkip"> 跳過練習<small class="en">Skip samples</small></button>
+    </div>
+    <div class="timebar" id="timebar"><div class="timebar-fill" id="timeFill"></div><div class="runner" id="runner"></div></div>
+    <div class="stage">
+      <div class="card" id="card">
+        <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
+        <div class="word" id="word"></div>
+      </div>
+    </div>
+    <div class="answer-row">
+      <button class="btn btn-orange" id="skipBtn"> 跳過<small class="en">Skip</small></button>
+      <button class="btn btn-green" id="knowBtn"> 我認識<small class="en">I Know It</small></button>
+    </div>
+    <div class="hint-keys">鍵盤：← 跳過　→ / 空白鍵 我認識<span class="en-line">Keyboard: ← Skip　→ / Space I know it</span></div>
+  </section>
+
+  <!-- ===== RESULT ===== -->
+  <section class="screen" id="result">
+    <div class="title-row"><div class="mascot" id="resultMascot"></div><div class="medal" id="medal"></div></div>
+    <div class="score-big" id="finalScore">0</div>
+    <div class="subtitle" style="margin-bottom:4px">組漢字認識了！<span class="en-line">words recognized!</span></div>
+    <div class="rank-line" id="rankLine"></div>
+    <div class="stars" id="stars"></div>
+    <div class="stats" id="stats"></div>
+    <div class="row">
+      <button class="btn btn-pink" id="againBtn"> 再玩一次<small class="en">Play Again</small></button>
+      <button class="btn btn-blue" id="practiceSkippedBtn"> 練習跳過的詞<small class="en">Practice Skipped Words</small></button>
+      <button class="btn btn-pink btn-small" id="matchSkippedBtn"> 連線練習錯題<small class="en">Match Wrong Words</small></button>
+      <button class="btn btn-green btn-small" id="resultLbBtn"> 排行榜<small class="en">Leaderboard</small></button>
+      <button class="btn btn-orange btn-small" id="homeBtn"> 回首頁<small class="en">Home</small></button>
+    </div>
+    <div class="save-bar"></div>
+    <div class="analysis" id="analysis">
+      <h3> 錯誤率最高的詞<span class="en-line">Words with the highest error rate</span></h3>
+      <div class="sub" id="aSub"></div>
+      <div id="aBody"></div>
+      <div style="text-align:center"><button class="link-btn" id="aTableBtn"> 顯示表格 Show table</button></div>
+      <div id="aTable" style="display:none"></div>
+    </div>
+    <div class="review">
+      <h3> 跳過的詞（點一下看答案）<span class="en-line">Skipped words (tap to see the answer)</span></h3>
+      <div class="chips" id="skippedChips"></div>
+      <h3 style="margin-top:20px"> 認識的詞<span class="en-line">Words you knew</span></h3>
+      <div class="chips" id="knownChips"></div>
+    </div>
+  </section>
+
+  <!-- ===== PRACTICE (untimed flashcards) ===== -->
+  <section class="screen" id="practice">
+    <div class="topbar">
+      <button class="quit-btn" id="practiceHome" title="返回 Back">← 返回<small class="en">Back</small></button>
+      <div class="pill">進度 <span class="num" id="pIndex">1</span> / <span id="pTotal">1</span></div>
+      <div class="pill">已會 <span class="num" id="pScore">0</span></div>
+    </div>
+    <div class="stage" style="margin-top:16px">
+      <div class="card" id="pCard">
+        <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
+        <div class="word" id="pWord"></div>
+        <div class="reveal" id="pReveal"></div>
+      </div>
+    </div>
+    <div class="answer-row">
+      <button class="btn btn-blue" id="pShowBtn"> 看答案<small class="en">Show Answer</small></button>
+      <button class="btn btn-orange" id="pAgainBtn"> 還不會<small class="en">Not Yet</small></button>
+      <button class="btn btn-green" id="pKnowBtn"> 我會了<small class="en">Got It</small></button>
+    </div>
+    <div class="hint-keys">練習模式沒有時間限制，慢慢來 <span class="en-line">No time limit in practice — take your time</span></div>
+  </section>
+
+  <!-- ===== MATCH (picture ↔ word) ===== -->
+  <section class="screen" id="match">
+    <div class="topbar">
+      <button class="quit-btn" id="matchQuit" title="結束練習，看錯題 Finish and see mistakes"> 結束<small class="en">Finish</small></button>
+      <div class="pill"> 第 <span class="num" id="mRound">1</span> / <span id="mTotal">1</span> 關 <small class="en-in">Round</small></div>
+      <div class="pill">連錯 <span class="num" id="mMiss">0</span></div>
+    </div>
+    <div class="post-banner" id="mBanner"></div>
+    <div class="m-title"> 把圖片和漢字連起來！<span class="en-line">Match each picture to its word!</span><div style="font-size:15px;opacity:.65">拖曳連線，或先點圖片再點漢字<span class="en-line">Drag a line, or tap a picture and then a word</span></div></div>
+    <div class="m-board" id="mBoard">
+      <svg id="mSvg"></svg>
+      <div class="m-col" id="mLeft"></div>
+      <div class="m-col" id="mRight"></div>
+    </div>
+    <div class="m-foot" id="mFoot"></div>
+  </section>
+
+  <!-- ===== MATCH SUMMARY ===== -->
+  <section class="screen" id="matchSummary" style="justify-content:flex-start">
+    <div class="title-row"><div class="mascot" id="msMascot"></div><h1 style="font-size:clamp(34px,8vw,52px)">連線練習結果</h1></div>
+    <div class="h1-en">Matching Results</div>
+    <div class="stats" id="msStats"></div>
+    <div class="row" id="msBtns"></div>
+    <div class="save-bar"></div>
+    <div class="review">
+      <h3> 連錯的詞<span class="en-line">Words matched wrong</span></h3>
+      <div class="chips" id="msChips"></div>
+      <h3 style="margin-top:18px"> 搞混的地方<span class="en-line">Mix-ups</span></h3>
+      <div class="confuse" id="msConfuse"></div>
+    </div>
+  </section>
+
+  <!-- ===== WORD BANK ===== -->
+  <section class="screen" id="bank" style="justify-content:flex-start">
+    <h1 style="font-size:44px"> 題庫</h1>
+    <div class="h1-en">Word Bank</div>
+    <p class="subtitle">中年級組・共 <span id="bankCount2"></span> 組漢字<span class="en-line">Middle-grade level · <span id="bankCount3"></span> words</span></p>
+    <div class="bank"><div class="chips" id="bankChips"></div></div>
+    <div class="row"><button class="btn btn-pink" id="bankBack">← 返回<small class="en">Back</small></button></div>
+  </section>
+
+  <!-- picture-matching menu -->
+  <div class="overlay" id="matchMenu">
+    <div class="panel">
+      <div style="font-size:30px"> 看圖連線<span class="en-line" style="font-size:16px">Picture Matching</span></div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn btn-pink" id="mmAll"> 全部題庫（<span id="mmAllN"></span> 組）<small class="en">All Words</small></button>
+      </div>
+      <div class="mm-sec"> 複習之前的錯題<span class="en-line">Review past mistakes</span></div>
+      <div class="players" id="mmPlayers"></div>
+      <div class="mm-info" id="mmInfo"></div>
+      <div class="mm-chips" id="mmChips"></div>
+      <div class="row">
+        <button class="btn btn-green btn-small" id="mmTop"> 複習最常錯的 10 組<small class="en">Review Top 10 Mistakes</small></button>
+        <button class="btn btn-blue btn-small" id="mmAllErr"> 複習全部錯題</button>
+      </div>
+      <div style="font-size:15px;opacity:.7;font-family:var(--kai)">錯題來自比賽跳過、連線連錯的紀錄。換了電腦或瀏覽器？先從資料夾載入紀錄。<span class="en-line">Mistakes come from skipped and mismatched words. New computer or browser? Load records from the folder first.</span></div>
+      <div class="row" style="margin-top:6px">
+        <button class="btn btn-orange btn-small" id="mmLoad"> 從資料夾載入紀錄<small class="en">Load Records</small></button>
+        <button class="btn btn-orange btn-small" id="mmClose">關閉<small class="en">Close</small></button>
+      </div>
+      <div class="load-msg" id="mmLoadMsg"></div>
+    </div>
+  </div>
+  <input type="file" id="csvInput" accept=".csv,text/csv" multiple style="display:none">
+
+  <!-- save settings -->
+  <div class="overlay" id="saveOverlay">
+    <div class="panel">
+      <div style="text-align:center;font-size:28px;margin-bottom:6px"> 存檔設定<span class="en-line" style="font-size:16px">Save Settings</span></div>
+      <div class="save-info">
+        每局比賽和連線練習的錯題，會自動寫進下面兩個檔案（CSV，可以用 Excel 打開）：
+        <span class="en-line">Each game and every mistake are saved automatically into these two CSV files (open them with Excel):</span>
+         <code>中年級組比賽成績.csv</code>：每局的成績<span class="en-line">— score of every game</span>
+         <code>中年級組錯題紀錄.csv</code>：比賽跳過的詞、連線連錯的詞<span class="en-line">— skipped words and mismatched words</span>
+        <span id="saveHow"></span>
+      </div>
+      <div class="save-bar" id="saveOverlayBar" style="box-shadow:none"></div>
+      <div class="row">
+        <button class="btn btn-pink btn-small" id="pickFolderBtn"> 選擇資料夾</button>
+        <button class="btn btn-orange btn-small" id="dlGamesBtn"> 下載成績 CSV<small class="en">Download Scores</small></button>
+        <button class="btn btn-orange btn-small" id="dlErrorsBtn"> 下載錯題 CSV<small class="en">Download Mistakes</small></button>
+        <button class="btn btn-green btn-small" id="loadBtn2"> 從資料夾載入紀錄<small class="en">Load Records</small></button>
+      </div>
+      <div class="load-msg" id="saveLoadMsg"></div>
+      <div class="row" style="margin-top:0"><button class="btn btn-green btn-small" id="saveCloseBtn">關閉<small class="en">Close</small></button></div>
+    </div>
+  </div>
+
+  <!-- leave post-game matching? -->
+  <div class="overlay" id="exitOverlay">
+    <div class="panel">
+      <div style="font-size:64px"></div>
+      <div style="font-size:26px;margin:6px 0 4px">要離開連線練習嗎？<span class="en-line">Leave matching practice?</span></div>
+      <div style="font-size:17px;opacity:.7;margin-bottom:10px">離開後會直接看比賽成績<span class="en-line">You’ll go straight to your contest results</span></div>
+      <button class="btn btn-green" id="exitStay"> 繼續練習<small class="en">Keep Practicing</small></button>
+      <button class="btn btn-orange btn-small" id="exitGo"> 退出，看成績<small class="en">Exit &amp; See Results</small></button>
+    </div>
+  </div>
+
+  <!-- pause overlay -->
+  <div class="overlay" id="pauseOverlay">
+    <div class="panel">
+      <div style="font-size:70px"></div>
+      <div style="font-size:30px;margin:6px 0 10px">休息一下～<span class="en-line">Take a break~</span></div>
+      <button class="btn btn-green" id="resumeBtn"> 繼續<small class="en">Resume</small></button>
+      <button class="btn btn-orange btn-small" id="quitBtn">結束這一局<small class="en">End This Game</small></button>
+    </div>
+  </div>
+
+<script>
+/* ===== 題庫：漢字文化節 中年級組 認字比賽（reference/中年級組 當日認字比賽 - Preliminary.pptx） ===== */
+const WORDS = [
+  ["班","bān","Class"],["歡","huān","Joyful"],["黑色","hēi sè","Black"],["小","xiǎo","Small"],
+  ["的","de","of / ’s (particle)"],["喜","xǐ","Happy / To Like"],["課","kè","Lesson"],["最","zuì","Most"],
+  ["我","wǒ","I / Me"],["新","xīn","New"],["上","shàng","Up / On"],["學生","xué shēng","Student"],
+  ["書","shū","Book"],["同","tóng","Same"],["讀","dú","To Read"],["字","zì","Character / Word"],
+  ["老師","lǎo shī","Teacher"],["問","wèn","To Ask"],["愛","ài","Love"],["答","dá","To Answer"],
+  ["寫","xiě","To Write"],["奶奶","nǎi nai","Grandma (Father’s Side)"],["膳","shàn","Meal"],["蘋果","píng guǒ","Apple"],
+  ["大","dà","Big"],["家","jiā","Home / Family"],["香蕉","xiāng jiāo","Banana"],["鳥","niǎo","Bird"],
+  ["朋友","péng yǒu","Friend"],["聽","tīng","To Listen"],["謝","xiè","To Thank"],["牛","niú","Cow"],
+  ["水","shuǐ","Water"],["麵包","miàn bāo","Bread"],["季","jì","Season"],["果","guǒ","Fruit"],
+  ["天氣","tiān qì","Weather"],["樹","shù","Tree"],["車站","chē zhàn","Station / Bus Stop"],["動物","dòng wù","Animal"],
+  ["熱","rè","Hot"],["雨","yǔ","Rain"],["雪","xuě","Snow"],["冷","lěng","Cold"],
+  ["顏色","yán sè","Color"],["喝","hē","To Drink"],["山","shān","Mountain"],["河","hé","River"],
+  ["狗","gǒu","Dog"],["花","huā","Flower"],["太陽","tài yáng","Sun"],["公共汽車","gōng gòng qì chē","Bus"],
+  ["魚","yú","Fish"],["飛機","fēi jī","Airplane"],["森林","sēn lín","Forest"],["唱歌","chàng gē","To Sing"],
+  ["車","chē","Car / Vehicle"],["畫圖","huà tú","To Draw"],["說","shuō","To Speak"],["自行車","zì xíng chē","Bicycle"],
+  ["遊戲","yóu xì","Game"],["月亮","yuè liàng","Moon"],["音樂","yīn yuè","Music"],["白","bái","White"],
+  ["跳舞","tiào wǔ","To Dance"],["綠色","lǜ sè","Green"],["長","cháng","Long"],["紅色","hóng sè","Red"],
+  ["星星","xīng xing","Star"],["貓","māo","Cat"],["藍色","lán sè","Blue"],["高","gāo","Tall / High"],
+  ["低","dī","Low"],["食","shí","Food / To Eat"],["黃色","huáng sè","Yellow"],["店","diàn","Shop"],
+  ["短","duǎn","Short"],["錢","qián","Money"],["買","mǎi","To Buy"],["賣","mài","To Sell"]
+].map(([w,p,e]) => ({ w, p, e }));
+
+/* 看圖識字用的圖片（emoji） */
+const PIC = {
+  "班":"🧑‍🤝‍🧑","歡":"😊","黑色":"⬛","小":"🐜","的":"🔗","喜":"😄","課":"📝","最":"🥇",
+  "我":"🙋","新":"🆕","上":"⬆️","學生":"🧑‍🎓","書":"📕","同":"👯","讀":"📖","字":"🔤",
+  "老師":"🧑‍🏫","問":"❓","愛":"❤️","答":"💬","寫":"✍️","奶奶":"👵","膳":"🍱","蘋果":"🍎",
+  "大":"🐘","家":"🏠","香蕉":"🍌","鳥":"🐦","朋友":"🤝","聽":"👂","謝":"🙏","牛":"🐄",
+  "水":"💧","麵包":"🍞","季":"🍂","果":"🍇","天氣":"🌦️","樹":"🌳","車站":"🚏","動物":"🐾",
+  "熱":"🔥","雨":"🌧️","雪":"❄️","冷":"🧊","顏色":"🌈","喝":"🥤","山":"⛰️","河":"🏞️",
+  "狗":"🐕","花":"🌸","太陽":"☀️","公共汽車":"🚌","魚":"🐟","飛機":"✈️","森林":"🌲","唱歌":"🎤",
+  "車":"🚗","畫圖":"🖌️","說":"🗣️","自行車":"🚲","遊戲":"🎮","月亮":"🌙","音樂":"🎵","白":"⬜",
+  "跳舞":"💃","綠色":"🟩","長":"📏","紅色":"🟥","星星":"⭐","貓":"🐈","藍色":"🟦","高":"🗼",
+  "低":"⬇️","食":"🍽️","黃色":"🟨","店":"🏪","短":"✂️","錢":"💰","買":"🛒","賣":"🏷️"
+};
+WORDS.forEach(it => it.pic = PIC[it.w] || "?");
+const BY_WORD = Object.fromEntries(WORDS.map(it => [it.w, it]));
+
+/* 中年級組 初賽考題：投影片 2–81 共 80 題，順序如下；這份考題沒有練習題 */
+const SAMPLE_WORDS = [];
+const OFFICIAL_ORDER = [
+  "班","歡","黑色","小","的","喜","課","最","我","新",
+  "上","學生","書","同","讀","字","老師","問","愛","答",
+  "寫","奶奶","膳","蘋果","大","家","香蕉","鳥","朋友","聽",
+  "謝","牛","水","麵包","季","果","天氣","樹","車站","動物",
+  "熱","雨","雪","冷","顏色","喝","山","河","狗","花",
+  "太陽","公共汽車","魚","飛機","森林","唱歌","車","畫圖","說","自行車",
+  "遊戲","月亮","音樂","白","跳舞","綠色","長","紅色","星星","貓",
+  "藍色","高","低","食","黃色","店","短","錢","買","賣"
+].map(w => BY_WORD[w]);
+
+const GAME_SECONDS = 60;
+const LB_KEY = "shizi-mid-leaderboard";
+const LAST_NAME_KEY = "shizi-mid-last-player";
+const LB_MAX = 3000;
+let player = "";
+const $ = id => document.getElementById(id);
+function esc(v) { return String(v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+// Chinese text with a smaller English line underneath
+function bi(zh, en) { return esc(zh) + (en ? `<span class="en-line">${esc(en)}</span>` : ""); }
+// English singular / plural: plural(1, "word") → "1 word", plural(3, "miss") → "3 misses"
+function plural(n, word) { return `${n} ${word}${n === 1 ? "" : /(s|sh|ch|x)$/.test(word) ? "es" : "s"}`; }
+function biBtn(zh, en) { return esc(zh) + (en ? `<small class="en">${esc(en)}</small>` : ""); }
+
+/* ---------- utils ---------- */
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
+  window.scrollTo(0, 0);
+}
+/* ---------- leaderboard storage (saved in this browser) ---------- */
+// in-memory fallback when localStorage is blocked (e.g. private mode)
+const memStore = {};
+function storeGet(k) { try { const v = localStorage.getItem(k); if (v !== null) return v; } catch {} return memStore[k] ?? null; }
+function storeSet(k, v) { memStore[k] = v; try { localStorage.setItem(k, v); } catch {} }
+function loadAllLB() {
+  try { const a = JSON.parse(storeGet(LB_KEY) || "[]"); return Array.isArray(a) ? a : []; } catch { return []; }
+}
+// only rank games with the current time limit (older records without `sec` were 2-minute games)
+function loadLB() { return loadAllLB().filter(r => (r.sec || 120) === GAME_SECONDS); }
+function saveLB(list) { storeSet(LB_KEY, JSON.stringify(list.slice(-LB_MAX))); }
+// higher score first; tie → fewer skips; tie → earlier
+function cmpRec(a, b) { return b.score - a.score || a.skipped - b.skipped || a.t - b.t; }
+function bestPerPlayer(list) {
+  const m = new Map();
+  list.forEach(r => { const cur = m.get(r.name); if (!cur || cmpRec(r, cur) < 0) m.set(r.name, r); });
+  return [...m.values()].sort(cmpRec);
+}
+function playerBest(name) { const r = bestPerPlayer(loadLB()).find(r => r.name === name); return r ? r.score : 0; }
+function knownPlayers() {
+  const seen = [];
+  loadLB().slice().reverse().forEach(r => { if (!seen.includes(r.name)) seen.push(r.name); });
+  return seen.slice(0, 12);
+}
+/* per-player word stats for error-rate analysis: { name: { word: [seen, missed] } } */
+const STATS_KEY = "shizi-mid-word-stats";
+function loadStats() { try { return JSON.parse(storeGet(STATS_KEY) || "{}") || {}; } catch { return {}; } }
+function recordStats(name, known, skipped) {
+  const all = loadStats(), me = all[name] || (all[name] = {});
+  known.forEach(it => { const r = me[it.w] || (me[it.w] = [0, 0]); r[0]++; });
+  skipped.forEach(it => { const r = me[it.w] || (me[it.w] = [0, 0]); r[0]++; r[1]++; });
+  storeSet(STATS_KEY, JSON.stringify(all));
+  return me;
+}
+function topErrors(me, n = 10) {
+  return Object.entries(me)
+    .filter(([w, [seen, miss]]) => miss > 0 && BY_WORD[w])
+    .map(([w, [seen, miss]]) => ({ it: BY_WORD[w], seen, miss, rate: miss / seen }))
+    .sort((a, b) => b.rate - a.rate || b.miss - a.miss)
+    .slice(0, n);
+}
+function readLastName() { return storeGet(LAST_NAME_KEY) || ""; }
+function writeLastName(n) { storeSet(LAST_NAME_KEY, n); }
+function fmt(sec) { sec = Math.max(0, Math.ceil(sec)); return Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0"); }
+function fitWord(el, text) {
+  el.textContent = text;
+  const n = [...text].length;
+  const vw = Math.min(window.innerWidth, 760);
+  const size = Math.min(n === 1 ? 240 : n === 2 ? 190 : 150, (vw - 110) / (n * 1.12));
+  el.style.fontSize = Math.max(56, size) + "px";
+}
+
+/* ---------- sound (WebAudio, no files) ---------- */
+let actx = null;
+function beep(freqs, dur = 0.12, type = "sine", vol = 0.18) {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    let t = actx.currentTime;
+    freqs.forEach(f => {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = type; o.frequency.value = f;
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + dur);
+      t += dur * 0.8;
+    });
+  } catch {}
+}
+const sfx = {
+  know: () => beep([660, 880, 1175], 0.1, "triangle"),
+  skip: () => beep([392, 330], 0.1, "sine", 0.12),
+  tick: () => beep([520], 0.08, "square", 0.06),
+  go:   () => beep([523, 659, 784, 1047], 0.13, "triangle"),
+  end:  () => beep([784, 988, 1175, 1568], 0.16, "triangle")
+};
+
+/* ---------- confetti ---------- */
+const cv = $("confetti"), cx = cv.getContext("2d");
+let pieces = [], confettiRaf = null;
+function confetti(n = 140) {
+  return;   // no confetti in this edition
+  cv.width = innerWidth; cv.height = innerHeight;
+  const colors = ["#b5532a", "#5d7a3a", "#7a6657", "#a8672a", "#b5532a", "#dccbb5"];
+  for (let i = 0; i < n; i++) pieces.push({
+    x: Math.random() * cv.width, y: -20 - Math.random() * cv.height * 0.5,
+    r: 5 + Math.random() * 7, c: colors[i % colors.length],
+    vy: 2 + Math.random() * 3, vx: -1.5 + Math.random() * 3, a: Math.random() * 6, va: -.2 + Math.random() * .4
+  });
+  if (!confettiRaf) loop();
+  function loop() {
+    cx.clearRect(0, 0, cv.width, cv.height);
+    pieces.forEach(p => { p.y += p.vy; p.x += p.vx; p.a += p.va;
+      cx.save(); cx.translate(p.x, p.y); cx.rotate(p.a); cx.fillStyle = p.c; cx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); cx.restore(); });
+    pieces = pieces.filter(p => p.y < cv.height + 30);
+    confettiRaf = pieces.length ? requestAnimationFrame(loop) : (cx.clearRect(0, 0, cv.width, cv.height), null);
+  }
+}
+function burst(emoji, btn) {
+  return;   // no flying icons in this edition
+  const r = btn.getBoundingClientRect();
+  const el = document.createElement("div");
+  el.className = "burst"; el.textContent = emoji;
+  el.style.left = (r.left + r.width / 2) + "px"; el.style.top = r.top + "px";
+  document.body.appendChild(el); setTimeout(() => el.remove(), 800);
+}
+
+/* ---------- timed game ---------- */
+const game = { warmup: false, deck: [], idx: 0, known: [], skipped: [], endAt: 0, remaining: GAME_SECONDS, timer: null, running: false, paused: false, locked: false, lastSec: null };
+const CHEERS = ["", "", "", "", "", "", "", ""];
+
+/* contest options: question order + warm-up, remembered between visits */
+const SETTINGS_KEY = "shizi-mid-settings";
+const settings = Object.assign({ order: "official", warmup: true }, loadSettings());
+function loadSettings() { try { return JSON.parse(storeGet(SETTINGS_KEY) || "{}") || {}; } catch { return {}; } }
+function saveSettings() { storeSet(SETTINGS_KEY, JSON.stringify(settings)); renderOptions(); }
+function renderOptions() {
+  $("optOrder").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === settings.order));
+  $("optWarm").querySelectorAll("button").forEach(b => b.classList.toggle("on", (b.dataset.v === "on") === settings.warmup));
+}
+
+// name confirmed (or "play again") → sample questions if enabled → countdown → timed game
+function beginContest() { settings.warmup && SAMPLE_WORDS.length ? startWarmup() : startCountdown(); }
+
+function startWarmup() {
+  clearInterval(game.timer);
+  Object.assign(game, { warmup: true, deck: SAMPLE_WORDS, idx: 0, known: [], skipped: [], running: true, paused: false, locked: false });
+  $("game").classList.add("warm");
+  $("warmTotal").textContent = SAMPLE_WORDS.length; $("warmN").textContent = 1;
+  $("whoPill").textContent = " " + player;
+  show("game");
+  showCard();
+}
+function finishWarmup() {
+  if (!game.warmup) return;
+  game.warmup = false; game.running = false;
+  $("game").classList.remove("warm");
+  startCountdown();
+}
+
+function startCountdown() {
+  show("countdown");
+  let n = 3; $("cdNum").textContent = n; sfx.tick();
+  const iv = setInterval(() => {
+    n--;
+    const el = $("cdNum");
+    if (n >= 0) { el.textContent = n > 0 ? n : "GO!"; el.style.animation = "none"; el.offsetHeight; el.style.animation = ""; }
+    if (n > 0) sfx.tick();
+    else if (n < 0) { clearInterval(iv); startGame(); }
+  }, 800);
+}
+
+/* ---------- player name ---------- */
+function openNameScreen() {
+  const input = $("nameInput");
+  input.value = player || readLastName();
+  $("nameErr").textContent = "";
+  const names = knownPlayers(), box = $("players");
+  box.innerHTML = "";
+  names.forEach(n => {
+    const b = document.createElement("button");
+    b.className = "player-chip"; b.textContent = n;
+    b.onclick = () => { input.value = n; confirmName(); };
+    box.appendChild(b);
+  });
+  $("playersWrap").style.display = names.length ? "" : "none";
+  show("nameScreen");
+  setTimeout(() => input.focus(), 50);
+}
+function confirmName() {
+  const n = $("nameInput").value.replace(/\s+/g, " ").trim();
+  if (!n) { $("nameErr").innerHTML = bi("請先輸入名字喔 ", "Please enter your name first"); $("nameInput").focus(); return; }
+  player = n; writeLastName(n);
+  beginContest();
+}
+
+function startGame() {
+  $("game").classList.remove("warm");
+  Object.assign(game, { warmup: false, deck: settings.order === "official" ? OFFICIAL_ORDER : shuffle(WORDS), idx: 0, known: [], skipped: [], remaining: GAME_SECONDS, running: true, paused: false, locked: false, lastSec: null });
+  $("scoreNum").textContent = "0";
+  $("whoPill").textContent = " " + player;
+  show("game"); sfx.go();
+  showCard();
+  resumeTimer();
+}
+
+function resumeTimer() {
+  game.endAt = performance.now() + game.remaining * 1000;
+  clearInterval(game.timer);
+  game.timer = setInterval(tick, 200);
+  tick();
+}
+
+function tick() {
+  if (!game.running || game.paused || game.warmup) return;
+  game.remaining = (game.endAt - performance.now()) / 1000;
+  const r = Math.max(0, game.remaining);
+  $("timeNum").textContent = fmt(r);
+  const pct = r / GAME_SECONDS * 100;
+  $("timeFill").style.width = pct + "%";
+  $("runner").style.left = Math.max(3, Math.min(97, pct)) + "%";
+  const hurry = r <= 10;
+  $("timePill").classList.toggle("hurry", hurry);
+  $("timebar").classList.toggle("hurry", hurry);
+  $("runner").textContent = hurry ? "" : "";
+  const sec = Math.ceil(r);
+  if (hurry && sec !== game.lastSec && sec > 0) sfx.tick();
+  game.lastSec = sec;
+  if (r <= 0) endGame();
+}
+
+function showCard() {
+  const card = $("card");
+  fitWord($("word"), game.deck[game.idx].w);
+  card.className = "card"; card.offsetHeight; card.className = "card pop";
+}
+
+function answer(knew) {
+  if (!game.running || game.paused || game.locked) return;
+  game.locked = true;
+  const item = game.deck[game.idx];
+  if (game.warmup) {                       // sample questions: nothing is recorded
+    knew ? sfx.know() : sfx.skip();
+    $("card").className = "card " + (knew ? "fly-right" : "fly-left");
+    setTimeout(() => {
+      game.idx++; game.locked = false;
+      if (!game.warmup) return;
+      if (game.idx >= game.deck.length) finishWarmup();
+      else { $("warmN").textContent = game.idx + 1; showCard(); }
+    }, 220);
+    return;
+  }
+  (knew ? game.known : game.skipped).push(item);
+  if (knew) { sfx.know(); $("scoreNum").textContent = game.known.length; burst(CHEERS[Math.floor(Math.random() * CHEERS.length)], $("knowBtn")); }
+  else sfx.skip();
+  const card = $("card");
+  card.className = "card " + (knew ? "fly-right" : "fly-left");
+  setTimeout(() => {
+    game.idx++;
+    game.locked = false;
+    if (game.idx >= game.deck.length) { endGame(true); return; }
+    if (game.running) showCard();
+  }, 220);
+}
+
+function pauseGame() {
+  if (!game.running || game.paused || game.warmup) return;
+  game.paused = true;
+  game.remaining = (game.endAt - performance.now()) / 1000;
+  clearInterval(game.timer);
+  $("pauseOverlay").classList.add("show");
+}
+function resumeGame() {
+  $("pauseOverlay").classList.remove("show");
+  if (!game.running) return;
+  game.paused = false; resumeTimer();
+}
+
+function endGame(allDone = false) {
+  if (!game.running || game.warmup) return;
+  game.running = false; game.paused = false;
+  clearInterval(game.timer);
+  $("pauseOverlay").classList.remove("show");
+  showResult(allDone);
+}
+
+function chip(item, cls, revealOnClick) {
+  const d = document.createElement("div");
+  d.className = "chip " + cls;
+  d.innerHTML = `<div class="w"></div><div class="p"></div><div class="e"></div>`;
+  d.querySelector(".w").textContent = item.w;
+  const fill = () => { d.querySelector(".p").textContent = item.p; d.querySelector(".e").textContent = `${item.pic} ${item.e}`; };
+  if (revealOnClick) { d.querySelector(".p").textContent = "點一下 tap"; d.onclick = fill; } else fill();
+  return d;
+}
+
+function showResult(allDone) {
+  const score = game.known.length;
+  const seen = game.known.length + game.skipped.length;
+  const prevBest = playerBest(player);
+  const newBest = score > prevBest;
+  const lb = loadAllLB();
+  lb.push({ name: player, score, skipped: game.skipped.length, t: Date.now(), sec: GAME_SECONDS });
+  saveLB(lb);
+  const ranking = bestPerPlayer(loadLB());
+  const rank = ranking.findIndex(r => r.name === player) + 1;
+  $("rankLine").innerHTML = rank ? bi(` ${player}　排行榜第 ${rank} 名（共 ${ranking.length} 位參賽者）`, `Rank #${rank} of ${ranking.length} players`) : esc(` ${player}`);
+
+  $("finalScore").textContent = score;
+  const starCount = score >= 20 ? 3 : score >= 10 ? 2 : score >= 3 ? 1 : 0;
+  $("stars").textContent = "★".repeat(starCount) + "☆".repeat(3 - starCount);
+  let medal, medalEn, mascot;
+  if (allDone)          { medal = ` 全部 ${WORDS.length} 組都答完了！`; medalEn = `All ${WORDS.length} words completed!`; mascot = ""; }
+  else if (score >= 20) { medal = " 表現優異！"; medalEn = "Excellent!"; mascot = ""; }
+  else if (score >= 10) { medal = " 表現很好，繼續加油！"; medalEn = "Well done — keep it up!"; mascot = ""; }
+  else if (score >= 3)  { medal = " 不錯，多練習會更好。"; medalEn = "Good — more practice will help."; mascot = ""; }
+  else                  { medal = " 繼續練習，每天進步一點。"; medalEn = "Keep practicing — a little better every day."; mascot = ""; }
+  if (newBest && score > 0) { medal += "\n 你的新紀錄！"; medalEn += "\n New personal best!"; }
+  $("medal").innerHTML = esc(medal) + `<span class="en-line">${esc(medalEn)}</span>`;
+  $("medal").style.whiteSpace = "pre-line";
+  $("resultMascot").textContent = mascot;
+
+  const stats = $("stats"); stats.innerHTML = "";
+  [[" 看過 Seen", seen], [" 跳過 Skipped", game.skipped.length], [" 我的最佳 My best", Math.max(prevBest, score)]].forEach(([k, v]) => {
+    const p = document.createElement("div"); p.className = "pill"; p.textContent = `${k} ${v}`; stats.appendChild(p);
+  });
+
+  const sk = $("skippedChips"); sk.innerHTML = "";
+  if (!game.skipped.length) sk.innerHTML = `<div style="font-family:var(--kai);font-size:20px">沒有跳過的詞，好厲害！<span class="en-line">No skipped words — great job!</span></div>`;
+  game.skipped.forEach(it => sk.appendChild(chip(it, "skipped", true)));
+  const kn = $("knownChips"); kn.innerHTML = "";
+  game.known.forEach(it => kn.appendChild(chip(it, "known", false)));
+  $("practiceSkippedBtn").style.display = game.skipped.length ? "" : "none";
+
+  const me = recordStats(player, game.known, game.skipped);
+  lastErrors = topErrors(me);
+  renderAnalysis(me, lastErrors);
+  $("matchSkippedBtn").style.display = lastErrors.length ? "" : "none";
+
+  const t = stamp();
+  queueRows([
+    { f: FILE_GAMES, r: [t, player, GAME_SECONDS, score, seen, game.skipped.length, allDone ? "是" : "否"] },
+    ...game.skipped.map(it => ({ f: FILE_ERRORS, r: [t, player, "比賽跳過", it.w, it.p, it.e, ""] }))
+  ]);
+
+  pendingResult = { score, newBest };
+  // after every game: go straight into picture-matching practice of the skipped words
+  if (game.skipped.length) startMatch(game.skipped, "post");
+  else revealResult();
+}
+
+let pendingResult = null;
+function revealResult() {
+  const pill = $("matchPill");
+  if (pill) pill.remove();
+  if (match.mode === "post" && match.rounds.length) {
+    const p = document.createElement("div");
+    p.className = "pill"; p.id = "matchPill";
+    p.textContent = ` 連線 ${roundsCompleted()}/${match.rounds.length} 關・錯 ${match.totalMiss} 次 · Matching ${roundsCompleted()}/${match.rounds.length} rounds, ${plural(match.totalMiss, "miss")}`;
+    $("stats").appendChild(p);
+  }
+  match.mode = "free";
+  show("result");
+  sfx.end();
+  if (pendingResult && pendingResult.score > 0) confetti(pendingResult.newBest ? 220 : 120);
+  pendingResult = null;
+}
+
+/* ---------- save records to a local folder (File System Access API) ----------
+   Browsers can't write next to the HTML file on their own: the player picks that
+   folder once, the handle is kept in IndexedDB, and rows are appended to CSV files.
+   Every row also waits in a localStorage queue until it is written, so nothing is lost
+   while the folder isn't chosen / allowed yet. */
+const FILE_GAMES = "中年級組比賽成績.csv";
+const FILE_ERRORS = "中年級組錯題紀錄.csv";
+const CSV_HEAD = {
+  [FILE_GAMES]: ["日期時間", "玩家", "比賽秒數", "認識組數", "看過組數", "跳過組數", "全部答完"],
+  [FILE_ERRORS]: ["日期時間", "玩家", "來源", "詞組", "拼音", "英文", "連錯成"]
+};
+const QUEUE_KEY = "shizi-mid-save-queue", HIST_KEY = "shizi-mid-save-history", HIST_MAX = 20000;
+const canPickFolder = "showDirectoryPicker" in window;
+let dirHandle = null;
+const save = { state: "idle", pending: 0, msg: "" };
+
+function stamp(d = new Date()) {
+  const z = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}:${z(d.getSeconds())}`;
+}
+function csvCell(v) { v = String(v ?? ""); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+function csvLine(cells) { return cells.map(csvCell).join(",") + "\r\n"; }
+function loadJSON(k, def) { try { const v = JSON.parse(storeGet(k) || "null"); return v ?? def; } catch { return def; } }
+function playerName() { return player || readLastName() || "（未輸入）"; }
+
+function queueRows(items) {            // items: [{ f: fileName, r: [cells] }]
+  if (!items.length) return;
+  const q = loadJSON(QUEUE_KEY, []), h = loadJSON(HIST_KEY, []);
+  q.push(...items); h.push(...items);
+  storeSet(QUEUE_KEY, JSON.stringify(q));
+  storeSet(HIST_KEY, JSON.stringify(h.slice(-HIST_MAX)));
+  flushSave();
+}
+
+function idb(mode, fn) {
+  return new Promise((res, rej) => {
+    const open = indexedDB.open("shizi-mid-files", 1);
+    open.onupgradeneeded = () => open.result.createObjectStore("kv");
+    open.onerror = () => rej(open.error);
+    open.onsuccess = () => {
+      const tx = open.result.transaction("kv", mode), req = fn(tx.objectStore("kv"));
+      tx.oncomplete = () => res(req && req.result);
+      tx.onerror = () => rej(tx.error);
+    };
+  });
+}
+
+async function hasPermission(interactive) {
+  if (!dirHandle) return false;
+  if (!dirHandle.queryPermission) return true;
+  const opt = { mode: "readwrite" };
+  if (await dirHandle.queryPermission(opt) === "granted") return true;
+  return interactive && (await dirHandle.requestPermission(opt)) === "granted";
+}
+
+async function writeQueue(interactive) {
+  const q = loadJSON(QUEUE_KEY, []);
+  save.pending = q.length;
+  if (!canPickFolder) return setSave("dl");
+  if (!dirHandle) return setSave("nofolder");
+  if (!(await hasPermission(interactive))) return setSave("noperm");
+  if (!q.length) return setSave("ok");
+  for (const file of [FILE_GAMES, FILE_ERRORS]) {
+    const rows = q.filter(x => x.f === file).map(x => x.r);
+    if (!rows.length) continue;
+    const fh = await dirHandle.getFileHandle(file, { create: true });
+    let old = await (await fh.getFile()).text();
+    // File.text() drops the BOM, so always put it back (Excel needs it to read UTF-8)
+    old = old.replace(/^\uFEFF/, "");
+    if (!old) old = csvLine(CSV_HEAD[file]);
+    else if (!/\n$/.test(old)) old += "\r\n";
+    const w = await fh.createWritable();
+    await w.write("﻿" + old + rows.map(csvLine).join(""));
+    await w.close();
+  }
+  storeSet(QUEUE_KEY, JSON.stringify(loadJSON(QUEUE_KEY, []).slice(q.length)));
+  save.pending = 0;
+  setSave("ok");
+}
+
+let saveChain = Promise.resolve();
+function flushSave(interactive = false) {
+  saveChain = saveChain.then(() => writeQueue(interactive)).catch(e => {
+    const locked = e && e.name === "NoModificationAllowedError";
+    save.msg = locked ? "檔案可能正被 Excel 打開，請關掉後再試" : "存檔失敗：" + (e && e.message || e);
+    save.msgEn = locked ? "The file may be open in Excel — close it and try again" : "Save failed: " + (e && e.message || e);
+    setSave("err");
+  });
+  return saveChain;
+}
+
+async function pickFolder() {
+  try {
+    const h = await window.showDirectoryPicker({ id: "shizi-mid-save", mode: "readwrite" });
+    dirHandle = h;
+    try { await idb("readwrite", st => st.put(h, "dir")); } catch {}
+    await flushSave(true);
+  } catch (e) {
+    if (e && e.name !== "AbortError") { save.msg = "無法使用這個資料夾：" + e.message; save.msgEn = "Can't use this folder: " + e.message; setSave("err"); }
+  }
+}
+
+function downloadCSV(file) {
+  const rows = loadJSON(HIST_KEY, []).filter(x => x.f === file).map(x => x.r);
+  const text = "\uFEFF" + csvLine(CSV_HEAD[file]) + rows.map(csvLine).join("");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], { type: "text/csv;charset=utf-8" }));
+  a.download = file;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+function saveAction() {
+  if (!canPickFolder) downloadCSV(FILE_ERRORS);
+  else if (!dirHandle) pickFolder();
+  else flushSave(true);
+}
+
+function setSave(state) { save.state = state; renderSaveBars(); }
+function renderSaveBars() {
+  const n = save.pending, wait = n ? `（${n} 筆等待存檔）` : "", waitEn = n ? ` (${n} waiting to be saved)` : "";
+  const folder = dirHandle && dirHandle.name ? `「${dirHandle.name}」` : "", folderEn = dirHandle && dirHandle.name ? ` "${dirHandle.name}"` : "";
+  // [class, Chinese, English, button Chinese, button English]
+  const view = {
+    idle:     ["", " 檢查存檔中…", "Checking save status…"],
+    ok:       ["ok", ` 紀錄已存到資料夾${folder}`, `Records saved to folder${folderEn}`],
+    nofolder: ["warn", ` 還沒選存檔資料夾${wait}`, `No save folder chosen yet${waitEn}`, " 選擇資料夾", "Choose Folder"],
+    noperm:   ["warn", ` 需要允許存到資料夾${folder}${wait}`, `Permission needed to save to the folder${waitEn}`, " 允許並存檔", "Allow & Save"],
+    dl:       ["warn", "這個瀏覽器不能直接存到資料夾，請下載後放進遊戲資料夾", "This browser can't save to a folder — download and move the file into the game folder", " 下載錯題紀錄", "Download Mistakes"],
+    err:      ["err", ` ${save.msg}${wait}`, `${save.msgEn || ""}${waitEn}`, " 再試一次", "Try Again"]
+  }[save.state];
+  document.querySelectorAll(".save-bar").forEach(bar => {
+    bar.className = "save-bar " + view[0];
+    bar.innerHTML = `<div>${bi(view[1], view[2])}</div>`;
+    if (view[3] && bar.id !== "saveOverlayBar") {   // the settings dialog has its own buttons
+      const b = document.createElement("button");
+      b.className = "btn btn-blue btn-small"; b.innerHTML = biBtn(view[3], view[4]); b.onclick = saveAction;
+      bar.appendChild(b);
+    }
+  });
+  $("pickFolderBtn").style.display = canPickFolder ? "" : "none";
+  $("pickFolderBtn").innerHTML = dirHandle ? biBtn(" 更換資料夾", "Change Folder") : biBtn(" 選擇資料夾", "Choose Folder");
+  $("saveHow").innerHTML = canPickFolder
+    ? " 第一次請按「選擇資料夾」，選<b>放這個遊戲網頁的資料夾</b>，之後會自動存檔。<span class='en-line'>First time: tap “Choose Folder” and pick <b>the folder this game page is in</b>. After that, saving is automatic.</span>"
+    : " 這個瀏覽器不支援直接存到資料夾（請用 Chrome 或 Edge）。可以按下載，再把檔案放進遊戲資料夾。<span class='en-line'>This browser can't save to a folder (use Chrome or Edge). Download the files and put them in the game folder.</span>";
+}
+
+async function initSave() {
+  if (canPickFolder) { try { dirHandle = (await idb("readonly", st => st.get("dir"))) || null; } catch { dirHandle = null; } }
+  await flushSave();
+  if (dirHandle) loadFromFolder(false);   // only works if permission is still granted; otherwise silent
+}
+
+/* ---------- 從資料夾載入紀錄 (read the CSV files back) ---------- */
+function parseCSV(text) {
+  text = text.replace(/^\uFEFF/, "");
+  const rows = []; let row = [], cell = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) {
+      if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+      else cell += c;
+    } else if (c === '"') q = true;
+    else if (c === ",") { row.push(cell); cell = ""; }
+    else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(cell); cell = "";
+      if (row.some(v => v !== "")) rows.push(row);
+      row = [];
+    } else cell += c;
+  }
+  row.push(cell);
+  if (row.some(v => v !== "")) rows.push(row);
+  return rows;
+}
+function csvKind(rows) {
+  const h = rows[0] || [];
+  if (h.includes("比賽秒數")) return FILE_GAMES;
+  if (h.includes("來源")) return FILE_ERRORS;
+  return null;
+}
+function parseStamp(t) {
+  const m = /^(\d{4})-(\d{1,2})-(\d{1,2})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?/.exec(t || "");
+  return m ? new Date(+m[1], m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0)).getTime() : NaN;
+}
+
+// merge rows into the local history + leaderboard; duplicates are skipped
+function importRecords(byFile) {
+  const rowKey = x => x.f + "|" + x.r.map(String).join("\u0001");
+  const hist = loadJSON(HIST_KEY, []), seen = new Set(hist.map(rowKey));
+  const lb = loadAllLB(), lbKey = r => `${r.name}|${stamp(new Date(r.t))}|${r.score}`, lbSeen = new Set(lb.map(lbKey));
+  const res = { games: 0, gamesNew: 0, errors: 0, errorsNew: 0 };
+  for (const [file, rows] of Object.entries(byFile)) {
+    rows.forEach(r => {
+      if (file === FILE_GAMES) res.games++; else res.errors++;
+      const item = { f: file, r };
+      if (!seen.has(rowKey(item))) {
+        seen.add(rowKey(item)); hist.push(item);
+        if (file === FILE_ERRORS) res.errorsNew++;
+      }
+      if (file === FILE_ERRORS) return;
+      const t = parseStamp(r[0]);
+      if (isNaN(t) || !r[1]) return;
+      const rec = { name: r[1], score: Number(r[3]) || 0, skipped: Number(r[5]) || 0, t, sec: Number(r[2]) || 120 };
+      if (!lbSeen.has(lbKey(rec))) { lbSeen.add(lbKey(rec)); lb.push(rec); res.gamesNew++; }
+    });
+  }
+  hist.sort((a, b) => (parseStamp(a.r[0]) || 0) - (parseStamp(b.r[0]) || 0));
+  storeSet(HIST_KEY, JSON.stringify(hist.slice(-HIST_MAX)));
+  lb.sort((a, b) => a.t - b.t);
+  saveLB(lb);
+  refreshBest();
+  if ($("matchMenu").classList.contains("show")) renderMatchMenu();
+  return res;
+}
+
+function showLoadMsg(zh, en, isErr) {
+  ["homeLoadMsg", "saveLoadMsg", "mmLoadMsg"].forEach(id => { const el = $(id); el.innerHTML = zh ? bi(zh, en) : ""; el.classList.toggle("err", !!isErr); });
+}
+function loadSummary(res) {
+  return [` 已載入：比賽成績 ${res.games} 筆（新增 ${res.gamesNew}）、錯題 ${res.errors} 筆（新增 ${res.errorsNew}）`,
+          `Loaded ${plural(res.games, "game record")} (${res.gamesNew} new) and ${plural(res.errors, "mistake record")} (${res.errorsNew} new)`];
+}
+async function readFileText(name) {
+  try { return await (await (await dirHandle.getFileHandle(name)).getFile()).text(); }
+  catch (e) { if (e && e.name === "NotFoundError") return null; throw e; }
+}
+
+// interactive = started by a click (may open the folder picker / ask permission)
+async function loadFromFolder(interactive = true) {
+  try {
+    if (!canPickFolder) { if (interactive) $("csvInput").click(); return; }
+    if (!dirHandle) {
+      if (!interactive) return;
+      const h = await window.showDirectoryPicker({ id: "shizi-mid-save", mode: "readwrite" });
+      dirHandle = h;
+      try { await idb("readwrite", st => st.put(h, "dir")); } catch {}
+    }
+    if (!(await hasPermission(interactive))) { if (interactive) showLoadMsg(" 沒有取得資料夾的權限", "No permission to use the folder", true); return; }
+    await saveChain;                                   // write pending rows first
+    const byFile = {};
+    for (const f of [FILE_GAMES, FILE_ERRORS]) {
+      const text = await readFileText(f);
+      if (text) { const rows = parseCSV(text); if (csvKind(rows) === f) byFile[f] = rows.slice(1); }
+    }
+    if (!Object.keys(byFile).length) { if (interactive) showLoadMsg(`資料夾${dirHandle.name ? "「" + dirHandle.name + "」" : ""}裡還沒有紀錄檔`, "No record files in this folder yet", true); return; }
+    const res = importRecords(byFile);
+    if (interactive || res.gamesNew || res.errorsNew) showLoadMsg(...loadSummary(res));
+    flushSave();
+  } catch (e) {
+    if (e && e.name === "AbortError") return;
+    if (interactive) showLoadMsg("載入失敗：" + (e && e.message || e), "Load failed: " + (e && e.message || e), true);
+  }
+}
+
+// fallback for browsers without folder access: pick the CSV files by hand
+async function loadFromFiles(files) {
+  const byFile = {};
+  for (const file of files) {
+    const rows = parseCSV(await file.text()), kind = csvKind(rows);
+    if (kind) byFile[kind] = (byFile[kind] || []).concat(rows.slice(1));
+  }
+  if (!Object.keys(byFile).length) { showLoadMsg("選的檔案不是遊戲的紀錄檔", "These are not game record files", true); return; }
+  showLoadMsg(...loadSummary(importRecords(byFile)));
+}
+
+/* ---------- review past wrong words ---------- */
+const ALL_PLAYERS = "＊全部玩家";
+let mmPlayer = "";
+function errorRows() { return loadJSON(HIST_KEY, []).filter(x => x.f === FILE_ERRORS).map(x => x.r); }
+function reviewPlayers() {
+  const names = [];
+  errorRows().slice().reverse().forEach(r => { if (r[1] && !names.includes(r[1])) names.push(r[1]); });
+  return names;
+}
+// word → times it was wrong (skipped, or involved in a wrong connection)
+function errorCounts(name) {
+  const m = new Map();
+  const add = w => { if (BY_WORD[w]) m.set(w, (m.get(w) || 0) + 1); };
+  errorRows().forEach(r => { if (name === ALL_PLAYERS || r[1] === name) { add(r[3]); if (r[6]) add(r[6]); } });
+  return [...m.entries()].sort((a, b) => b[1] - a[1]).map(([w, n]) => ({ it: BY_WORD[w], n }));
+}
+function openMatchMenu() {
+  const names = reviewPlayers(), me = player || readLastName();
+  mmPlayer = names.includes(me) ? me : (names[0] || "");
+  showLoadMsg("", "");
+  renderMatchMenu();
+  $("matchMenu").classList.add("show");
+}
+function renderMatchMenu() {
+  $("mmAllN").textContent = WORDS.length;
+  const names = reviewPlayers();
+  if (mmPlayer && mmPlayer !== ALL_PLAYERS && !names.includes(mmPlayer)) mmPlayer = names[0] || "";
+  const box = $("mmPlayers"); box.innerHTML = "";
+  (names.length > 1 ? names.concat(ALL_PLAYERS) : names).forEach(n => {
+    const b = document.createElement("button");
+    b.className = "player-chip" + (n === mmPlayer ? " on" : ""); b.textContent = n === ALL_PLAYERS ? " 全部玩家 All" : n;
+    b.onclick = () => { mmPlayer = n; renderMatchMenu(); };
+    box.appendChild(b);
+  });
+  const list = mmPlayer ? errorCounts(mmPlayer) : [];
+  const total = list.reduce((s, x) => s + x.n, 0);
+  const who = mmPlayer === ALL_PLAYERS ? "全部玩家" : mmPlayer, whoEn = mmPlayer === ALL_PLAYERS ? "All players" : mmPlayer;
+  $("mmInfo").innerHTML = !names.length
+    ? bi("還沒有錯題紀錄～先去比賽，或從資料夾載入紀錄吧！", "No mistakes recorded yet — play a contest or load records from the folder!")
+    : bi(`${who} 之前錯過 ${list.length} 組詞（共 ${total} 次），越前面錯越多次`, `${whoEn} missed ${plural(list.length, "word")} before (${plural(total, "time")}) — most missed first`);
+  const chips = $("mmChips"); chips.innerHTML = "";
+  list.slice(0, 20).forEach(({ it, n }) => {
+    const c = document.createElement("span"); c.className = "mm-chip";
+    c.textContent = it.w; const sm = document.createElement("small"); sm.textContent = "×" + n; c.appendChild(sm);
+    chips.appendChild(c);
+  });
+  if (list.length > 20) { const more = document.createElement("span"); more.className = "mm-chip"; more.textContent = `…還有 ${list.length - 20} 組 (+${list.length - 20} more)`; chips.appendChild(more); }
+  $("mmTop").style.display = list.length > 10 ? "" : "none";
+  $("mmAllErr").style.display = list.length ? "" : "none";
+  $("mmAllErr").innerHTML = biBtn(` 複習全部錯題（${list.length} 組）`, "Review All Mistakes");
+}
+function startReview(limit) {
+  const list = errorCounts(mmPlayer).slice(0, limit || undefined).map(x => x.it);
+  if (!list.length) return;
+  $("matchMenu").classList.remove("show");
+  startMatch(list, "review");
+}
+
+/* ---------- error-rate bar chart ---------- */
+let lastErrors = [];
+function renderAnalysis(me, rows) {
+  const answers = Object.values(me).reduce((s, [seen]) => s + seen, 0);
+  $("aSub").innerHTML = bi(`${player} 累計作答 ${answers} 次・錯誤率 = 跳過次數 ÷ 看到次數`, `${player}: ${plural(answers, "answer")} in total · error rate = times skipped ÷ times seen`);
+  const body = $("aBody"), tbl = $("aTable");
+  tbl.style.display = "none"; $("aTableBtn").textContent = " 顯示表格 Show table";
+  if (!rows.length) {
+    body.innerHTML = `<div style="text-align:center;font-family:var(--kai);font-size:22px;padding:16px">目前沒有跳過的詞，太棒了！<span class="en-line">No skipped words yet — awesome!</span></div>`;
+    $("aTableBtn").style.display = "none";
+    return;
+  }
+  $("aTableBtn").style.display = "";
+  const pct = r => Math.round(r * 100) + "%";
+  body.innerHTML = `
+    <div class="chart">
+      <div class="y-axis">${[100, 50, 0].map(v => `<span style="top:${100 - v}%">${v}%</span>`).join("")}</div>
+      <div class="plot" id="aPlot">${[100, 50].map(v => `<div class="gridline" style="top:${100 - v}%"></div>`).join("")}</div>
+      <div class="x-labels" id="aX"></div>
+    </div>
+    <div class="tip" id="aTip"></div>`;
+  const plot = $("aPlot"), xl = $("aX"), tip = $("aTip");
+  rows.forEach(r => {
+    const col = document.createElement("div");
+    col.className = "bar-col";
+    col.innerHTML = `<div class="bar" style="height:0"><div class="val"></div></div>`;
+    col.querySelector(".val").textContent = pct(r.rate);
+    plot.appendChild(col);
+    requestAnimationFrame(() => requestAnimationFrame(() => col.querySelector(".bar").style.height = `${r.rate * 100}%`));
+    const lab = document.createElement("div");
+    lab.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="emo"></span><span class="zh"></span></div>`;
+    lab.querySelector(".emo").textContent = r.it.pic;
+    lab.querySelector(".zh").textContent = r.it.w;
+    xl.appendChild(lab);
+    const showTip = () => {
+      plot.querySelectorAll(".bar-col").forEach(c => c.classList.toggle("on", c === col));
+      tip.innerHTML = `<b></b> <span class="py"></span><br><span class="det"></span>`;
+      tip.querySelector("b").textContent = r.it.w;
+      tip.querySelector(".py").textContent = r.it.p;
+      tip.querySelector(".det").textContent = `跳過 Skipped ${r.miss} / 看到 Seen ${r.seen}・${pct(r.rate)}`;
+      const box = $("analysis").getBoundingClientRect(), b = col.querySelector(".bar").getBoundingClientRect();
+      tip.style.left = Math.min(Math.max(b.left + b.width / 2 - box.left, 90), box.width - 90) + "px";
+      tip.style.top = (b.top - box.top - 18) + "px";
+      tip.style.display = "block";
+    };
+    col.addEventListener("pointerenter", showTip);
+    col.addEventListener("click", showTip);
+    col.addEventListener("pointerleave", () => { tip.style.display = "none"; col.classList.remove("on"); });
+  });
+  tbl.innerHTML = `<table class="a-table"><thead><tr><th>詞<br><small>Word</small></th><th>拼音<br><small>Pinyin</small></th><th>跳過<br><small>Skipped</small></th><th>看到<br><small>Seen</small></th><th>錯誤率<br><small>Error rate</small></th></tr></thead><tbody></tbody></table>`;
+  const tb = tbl.querySelector("tbody");
+  rows.forEach(r => {
+    const tr = document.createElement("tr");
+    [r.it.w, r.it.p, r.miss, r.seen, pct(r.rate)].forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+    tb.appendChild(tr);
+  });
+}
+
+/* ---------- picture ↔ word matching (5 per round) ---------- */
+const MATCH_SIZE = 5;
+const LINE_COLORS = ["#b5532a", "#5d7a3a", "#c98a1a", "#7b4b94", "#2f6f73"];
+const match = { mode: "free", rounds: [], r: 0, miss: 0, totalMiss: 0, sel: null, pairs: [], drag: null,
+                wrong: new Map(),   // word → times involved in a wrong connection
+                confusions: [],     // { pic: word whose picture was used, chose: word that was connected, round }
+                roundWrong: [],     // words mis-connected in the current round
+                finished: false };
+
+function startMatch(list, mode = "free") {
+  match.mode = mode;
+  const post = mode === "post";
+  $("matchQuit").innerHTML = post ? biBtn(" 退出", "Exit") : biBtn(" 結束", "Finish");
+  $("matchQuit").title = post ? "退出連線練習，看比賽成績 Exit and see contest results" : "結束練習，看錯題 Finish and see mistakes";
+  const banner = $("mBanner");
+  banner.classList.toggle("show", post || mode === "review");
+  if (mode === "review") {
+    banner.innerHTML = ` 複習 <span class="who-n"></span> 之前的錯題（<b></b> 組）<span class="en-line">Reviewing past mistakes (${plural(list.length, "word")})</span>`;
+    banner.querySelector(".who-n").textContent = mmPlayer === ALL_PLAYERS ? "全部玩家" : mmPlayer;
+    banner.querySelector("b").textContent = list.length;
+  }
+  if (post) {
+    banner.innerHTML = ` 比賽結束！${player ? "<span class='who-n'></span>，" : ""}你認識了 <b></b> 組漢字<br>先來連線練習剛才跳過的 ${list.length} 組詞吧！<span class="en-line">Game over! You knew ${plural(game.known.length, "word")}. Now let's match the ${plural(list.length, "word")} you skipped!</span>`;
+    const n = banner.querySelector(".who-n"); if (n) n.textContent = player;
+    banner.querySelector("b").textContent = game.known.length;
+  }
+  let words = shuffle(list);
+  // pad to a multiple of 5 with other words
+  const need = (MATCH_SIZE - words.length % MATCH_SIZE) % MATCH_SIZE;
+  if (need) words = words.concat(shuffle(WORDS.filter(it => !words.includes(it))).slice(0, need));
+  match.rounds = [];
+  for (let i = 0; i < words.length; i += MATCH_SIZE) match.rounds.push(words.slice(i, i + MATCH_SIZE));
+  match.r = 0; match.totalMiss = 0;
+  match.wrong = new Map(); match.confusions = []; match.finished = false;
+  $("mTotal").textContent = match.rounds.length;
+  show("match");
+  renderRound();
+}
+
+function matchItem(it, side) {
+  const b = document.createElement("button");
+  b.className = "m-item"; b.dataset.w = it.w; b.dataset.side = side;
+  if (side === "L") b.innerHTML = `<div class="pic"></div><div class="en"></div>`;
+  else b.innerHTML = `<div class="zh"></div>`;
+  if (side === "L") { b.querySelector(".pic").textContent = it.pic; b.querySelector(".en").textContent = it.e; }
+  else b.querySelector(".zh").textContent = it.w;
+  return b;
+}
+
+function renderRound() {
+  const round = match.rounds[match.r];
+  match.miss = 0; match.sel = null; match.pairs = []; match.roundWrong = [];
+  $("mRound").textContent = match.r + 1; $("mMiss").textContent = 0;
+  $("mLeft").innerHTML = ""; $("mRight").innerHTML = ""; $("mFoot").innerHTML = "";
+  shuffle(round).forEach(it => $("mLeft").appendChild(matchItem(it, "L")));
+  let right = shuffle(round);
+  // avoid every word sitting straight across from its picture
+  while (right.length > 1 && right.every((it, i) => it === $("mLeft").children[i].dataset.w)) right = shuffle(round);
+  right.forEach(it => $("mRight").appendChild(matchItem(it, "R")));
+  drawLines();
+}
+
+function centerOf(el, side) {
+  const bb = $("mBoard").getBoundingClientRect(), r = el.getBoundingClientRect();
+  return { x: (side === "L" ? r.right : r.left) - bb.left, y: r.top + r.height / 2 - bb.top };
+}
+function drawLines(temp) {
+  const svg = $("mSvg");
+  let html = "";
+  match.pairs.forEach(({ l, r, color }) => {
+    const a = centerOf(l, "L"), b = centerOf(r, "R");
+    html += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${color}" stroke-width="6" stroke-linecap="round"/>
+             <circle cx="${a.x}" cy="${a.y}" r="7" fill="${color}"/><circle cx="${b.x}" cy="${b.y}" r="7" fill="${color}"/>`;
+  });
+  if (temp) html += `<line x1="${temp.x1}" y1="${temp.y1}" x2="${temp.x2}" y2="${temp.y2}" stroke="#a8672a" stroke-width="5" stroke-dasharray="4 10" stroke-linecap="round"/>`;
+  svg.innerHTML = html;
+}
+
+function selectItem(el) {
+  document.querySelectorAll(".m-item.sel").forEach(x => x.classList.remove("sel"));
+  match.sel = el;
+  if (el) el.classList.add("sel");
+}
+
+function tryPair(a, b) {
+  const l = a.dataset.side === "L" ? a : b, r = a.dataset.side === "L" ? b : a;
+  selectItem(null);
+  if (l.dataset.w === r.dataset.w) {
+    const color = LINE_COLORS[match.pairs.length % LINE_COLORS.length];
+    match.pairs.push({ l, r, color });
+    [l, r].forEach(x => { x.classList.add("done"); x.style.borderColor = color; });
+    sfx.know(); burst("", r);
+    drawLines();
+    if (match.pairs.length === match.rounds[match.r].length) roundDone();
+  } else {
+    match.miss++; match.totalMiss++; $("mMiss").textContent = match.miss;
+    const pw = l.dataset.w, cw = r.dataset.w;
+    [pw, cw].forEach(w => {
+      match.wrong.set(w, (match.wrong.get(w) || 0) + 1);
+      if (!match.roundWrong.includes(w)) match.roundWrong.push(w);
+    });
+    match.confusions.push({ pic: pw, chose: cw, round: match.r + 1 });
+    const tw = BY_WORD[pw];
+    queueRows([{ f: FILE_ERRORS, r: [stamp(), playerName(), match.mode === "post" ? "比賽後連線" : match.mode === "review" ? "錯題複習" : "自由連線", tw.w, tw.p, tw.e, cw] }]);
+    sfx.skip();
+    [l, r].forEach(x => { x.classList.remove("wrong"); x.offsetWidth; x.classList.add("wrong"); setTimeout(() => x.classList.remove("wrong"), 750); });
+  }
+}
+
+function roundDone() {
+  const stars = match.miss === 0 ? 3 : match.miss <= 2 ? 2 : 1;
+  const last = match.r === match.rounds.length - 1;
+  const foot = $("mFoot");
+  if (last) match.finished = true;
+  foot.innerHTML = `<div class="m-stars">${"★".repeat(stars)}${"☆".repeat(3 - stars)}</div><div class="msg"></div><div class="round-wrong"></div><div class="row" style="margin-top:8px"></div>`;
+  if (match.roundWrong.length) foot.querySelector(".round-wrong").innerHTML = bi("這一關連錯的詞：" + match.roundWrong.join("、"), "Wrong this round");
+  foot.querySelector(".msg").innerHTML = last
+    ? bi(` 全部 ${match.rounds.length} 關完成！總共錯 ${match.totalMiss} 次`, `All done: ${plural(match.rounds.length, "round")}, ${plural(match.totalMiss, "miss")} in total`)
+    : (match.miss === 0 ? bi("全部答對，好厲害！", "All correct — awesome!") : bi("完成了，好棒！", "Round complete — well done!"));
+  const row = foot.querySelector(".row");
+  const btn = (txt, cls, fn) => { const b = document.createElement("button"); b.className = "btn " + cls; b.innerHTML = Array.isArray(txt) ? biBtn(...txt) : esc(txt); b.onclick = fn; row.appendChild(b); };
+  const post = match.mode === "post";
+  if (last) btn(post ? [" 看比賽成績", "See Contest Results"] : [" 看結果", "See Results"], "btn-pink", post ? revealResult : showMatchSummary);
+  else {
+    btn([" 下一關", "Next Round"], "btn-green", () => { match.r++; renderRound(); });
+    if (post) btn([" 退出，看成績", "Exit & See Results"], "btn-orange btn-small", revealResult);
+    else btn([" 結束看錯題", "Finish & See Mistakes"], "btn-orange btn-small", showMatchSummary);
+  }
+  sfx.end(); confetti(last ? 200 : 70);
+}
+
+function roundsCompleted() {
+  const cur = match.rounds[match.r];
+  return match.r + (cur && match.pairs.length === cur.length ? 1 : 0);
+}
+
+function showMatchSummary() {
+  match.drag = null; selectItem(null);
+  const done = roundsCompleted(), total = match.rounds.length;
+  const wrongList = [...match.wrong.entries()].sort((a, b) => b[1] - a[1]).map(([w, n]) => ({ it: BY_WORD[w], n }));
+
+  $("msMascot").textContent = match.finished ? (match.totalMiss === 0 ? "" : "") : "";
+  const stats = $("msStats"); stats.innerHTML = "";
+  [[" 完成 Done", `${done} / ${total} 關`], [" 連錯 Misses", `${match.totalMiss} 次`], [" 錯的詞 Wrong words", `${wrongList.length} 組`]].forEach(([k, v]) => {
+    const p = document.createElement("div"); p.className = "pill"; p.textContent = `${k} ${v}`; stats.appendChild(p);
+  });
+
+  const chips = $("msChips"); chips.innerHTML = "";
+  if (!wrongList.length) chips.innerHTML = `<div style="font-family:var(--kai);font-size:20px">沒有連錯，太厲害了！<span class="en-line">No mismatches — amazing!</span></div>`;
+  wrongList.forEach(({ it, n }) => {
+    const c = chip(it, "skipped", false);
+    const cnt = document.createElement("div"); cnt.className = "cnt"; cnt.textContent = `錯 ${n} 次 · wrong ${n}×`;
+    c.appendChild(cnt); chips.appendChild(c);
+  });
+
+  const cf = $("msConfuse"); cf.innerHTML = "";
+  if (!match.confusions.length) cf.innerHTML = `<div style="text-align:center;font-family:var(--kai);font-size:18px;opacity:.7">沒有搞混的地方 <span class="en-line">No mix-ups</span></div>`;
+  // merge repeated mix-ups of the same pair
+  const merged = new Map();
+  match.confusions.forEach(c => {
+    const k = c.pic + "|" + c.chose, m = merged.get(k);
+    if (m) m.times++; else merged.set(k, { ...c, times: 1 });
+  });
+  merged.forEach(({ pic, chose, round, times }) => {
+    const row = document.createElement("div"); row.className = "confuse-row";
+    row.innerHTML = `<span style="font-size:14px;opacity:.6">第${round}關 R${round}</span><span class="pic"></span><span>連成了 <small>matched</small></span><span class="bad"></span><span>→ 應該是 <small>should be</small></span><span class="good"></span>${times > 1 ? `<span style="font-size:15px;color:#b23a2a">×${times}</span>` : ""}`;
+    row.querySelector(".pic").textContent = BY_WORD[pic].pic;
+    row.querySelector(".bad").textContent = chose;
+    row.querySelector(".good").textContent = pic;
+    cf.appendChild(row);
+  });
+
+  const btns = $("msBtns"); btns.innerHTML = "";
+  const btn = (txt, cls, fn) => { const b = document.createElement("button"); b.className = "btn " + cls; b.innerHTML = Array.isArray(txt) ? biBtn(...txt) : esc(txt); b.onclick = fn; btns.appendChild(b); };
+  if (!match.finished) btn([" 繼續連線", "Continue Matching"], "btn-green", resumeMatch);
+  if (wrongList.length) btn([" 練習錯的詞", "Practice Wrong Words"], "btn-pink", () => startMatch(wrongList.map(x => x.it)));
+  if (match.finished) btn([" 再玩一次", "Play Again"], "btn-blue btn-small", () => startMatch(match.rounds.flat()));
+  btn([" 回首頁", "Home"], "btn-orange btn-small", goHome);
+
+  show("matchSummary");
+  if (match.finished) { sfx.end(); if (!match.totalMiss) confetti(); }
+}
+
+function resumeMatch() {
+  show("match");
+  // round already finished → go straight to the next one
+  if (match.pairs.length === match.rounds[match.r].length && match.r < match.rounds.length - 1) { match.r++; renderRound(); }
+  else drawLines();
+}
+
+$("mBoard").addEventListener("pointerdown", e => {
+  const el = e.target.closest(".m-item");
+  if (!el || el.classList.contains("done")) return;
+  e.preventDefault();
+  if (match.sel && match.sel !== el && match.sel.dataset.side !== el.dataset.side) { tryPair(match.sel, el); return; }
+  selectItem(el);
+  const a = centerOf(el, el.dataset.side);
+  match.drag = { el, x1: a.x, y1: a.y, moved: false };
+});
+window.addEventListener("pointermove", e => {
+  const d = match.drag; if (!d) return;
+  const bb = $("mBoard").getBoundingClientRect();
+  d.moved = true;
+  drawLines({ x1: d.x1, y1: d.y1, x2: e.clientX - bb.left, y2: e.clientY - bb.top });
+});
+window.addEventListener("pointerup", e => {
+  const d = match.drag; if (!d) return;
+  match.drag = null; drawLines();
+  const hit = document.elementFromPoint(e.clientX, e.clientY);
+  const el = hit && hit.closest(".m-item");
+  if (el && el !== d.el && !el.classList.contains("done") && el.dataset.side !== d.el.dataset.side) tryPair(d.el, el);
+  else if (d.moved && el !== d.el) selectItem(null);
+});
+
+/* ---------- untimed practice ---------- */
+const prac = { deck: [], idx: 0, score: 0, total: 0 };
+function startPractice(list) {
+  prac.deck = shuffle(list); prac.idx = 0; prac.score = 0; prac.total = list.length;
+  $("pTotal").textContent = prac.total; $("pScore").textContent = 0;
+  show("practice"); showPracticeCard();
+}
+function showPracticeCard() {
+  if (!prac.deck.length) {
+    $("pWord").textContent = ""; $("pWord").style.fontSize = "60px"; $("pWord").textContent = "";
+    $("pReveal").innerHTML = `<div class="p" style="font-family:var(--kai)">全部都會了！<span class="en-line">You've learned them all!</span></div>`;
+    $("pIndex").textContent = prac.total; confetti(); sfx.end();
+    return;
+  }
+  const it = prac.deck[prac.idx % prac.deck.length];
+  fitWord($("pWord"), it.w);
+  $("pReveal").innerHTML = "";
+  $("pIndex").textContent = Math.min(prac.score + 1, prac.total);
+  const c = $("pCard"); c.className = "card"; c.offsetHeight; c.className = "card pop";
+}
+function practiceReveal() {
+  if (!prac.deck.length) return;
+  const it = prac.deck[prac.idx % prac.deck.length];
+  $("pReveal").innerHTML = `<div class="emo"></div><div class="p"></div><div class="e"></div>`;
+  $("pReveal").querySelector(".emo").textContent = it.pic;
+  $("pReveal").querySelector(".p").textContent = it.p;
+  $("pReveal").querySelector(".e").textContent = it.e;
+}
+function practiceKnow() {
+  if (!prac.deck.length) return;
+  sfx.know(); burst("", $("pKnowBtn"));
+  prac.deck.splice(prac.idx % prac.deck.length, 1);
+  prac.score++; $("pScore").textContent = prac.score;
+  if (prac.deck.length) prac.idx = prac.idx % prac.deck.length;
+  showPracticeCard();
+}
+function practiceAgain() {
+  if (!prac.deck.length) return;
+  sfx.skip(); practiceReveal();
+  setTimeout(() => { prac.idx++; showPracticeCard(); }, 1200);
+}
+
+/* ---------- leaderboard screen ---------- */
+let lbMode = "best";
+function fmtDate(t) {
+  const d = new Date(t);
+  return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+function renderLB() {
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.mode === lbMode));
+  const all = loadLB();
+  const rows = (lbMode === "best" ? bestPerPlayer(all) : all.slice().sort(cmpRec)).slice(0, 20);
+  const box = $("lbList"); box.innerHTML = "";
+  if (!rows.length) { box.innerHTML = `<div class="lb-empty">還沒有紀錄～快來當第一名！<span class="en-line">No records yet — be the first!</span></div>`; return; }
+  const medals = ["", "", ""];
+  rows.forEach((r, i) => {
+    const row = document.createElement("div");
+    row.className = "lb-row" + (r.name === player ? " me" : "");
+    row.innerHTML = `<div class="lb-rank"></div><div class="lb-name"><div class="n"></div><div class="lb-date"></div></div><div class="lb-score"></div>`;
+    row.querySelector(".lb-rank").textContent = medals[i] || (i + 1);
+    row.querySelector(".n").textContent = r.name;
+    row.querySelector(".lb-date").textContent = fmtDate(r.t) + (r.skipped ? `・跳過 Skipped ${r.skipped}` : "");
+    row.querySelector(".lb-score").innerHTML = `${Number(r.score) || 0} <small>組</small>`;
+    box.appendChild(row);
+  });
+}
+function showLB() { renderLB(); show("leaderboard"); }
+
+/* ---------- word bank ---------- */
+function showBank() {
+  const b = $("bankChips"); b.innerHTML = "";
+  WORDS.forEach(it => b.appendChild(chip(it, "known", false)));
+  show("bank");
+}
+
+/* ---------- wiring ---------- */
+$("bankCount").textContent = WORDS.length;
+$("bankCount2").textContent = WORDS.length;
+$("bankCount3").textContent = WORDS.length;
+function goHub() { show("hub"); }
+$("hubBtn").onclick = goHub;
+$("hubBack").onclick = goHome;
+function refreshBest() {
+  const top = bestPerPlayer(loadLB())[0];
+  $("bestLine").innerHTML = top ? bi(` 目前第一名：${top.name}（${top.score} 組）`, `Top player: ${top.name} (${top.score} words)`) : bi(" 來創造第一個紀錄吧！", "Set the first record!");
+}
+refreshBest();
+
+$("startBtn").onclick = openNameScreen;
+$("nameGo").onclick = confirmName;
+$("nameBack").onclick = () => { refreshBest(); show("home"); };
+$("nameInput").addEventListener("keydown", e => { if (e.key === "Enter" && !e.isComposing) confirmName(); });
+$("lbBtn").onclick = showLB;
+$("resultLbBtn").onclick = showLB;
+$("lbBack").onclick = () => { refreshBest(); show("home"); };
+$("lbClear").onclick = () => {
+  if (confirm("確定要清除所有排行榜紀錄嗎？這個動作無法復原。\nClear all leaderboard records? This cannot be undone.")) { saveLB([]); renderLB(); }
+};
+document.querySelectorAll(".tab").forEach(b => b.onclick = () => { lbMode = b.dataset.mode; renderLB(); });
+$("againBtn").onclick = beginContest;
+$("warmSkip").onclick = finishWarmup;
+$("optOrder").querySelectorAll("button").forEach(b => b.onclick = () => { settings.order = b.dataset.v; saveSettings(); });
+$("optWarm").querySelectorAll("button").forEach(b => b.onclick = () => { settings.warmup = b.dataset.v === "on"; saveSettings(); });
+renderOptions();
+if (!SAMPLE_WORDS.length) $("optWarm").closest(".opt").style.display = "none";
+$("homeBtn").onclick = () => { refreshBest(); show("home"); };
+$("knowBtn").onclick = () => answer(true);
+$("skipBtn").onclick = () => answer(false);
+$("pauseBtn").onclick = pauseGame;
+$("resumeBtn").onclick = resumeGame;
+$("quitBtn").onclick = () => endGame();
+$("practiceAllBtn").onclick = () => startPractice(WORDS);
+function goHome() { refreshBest(); show("home"); }
+$("matchAllBtn").onclick = openMatchMenu;
+$("mmAll").onclick = () => { $("matchMenu").classList.remove("show"); startMatch(WORDS); };
+$("mmTop").onclick = () => startReview(10);
+$("mmAllErr").onclick = () => startReview(0);
+$("mmClose").onclick = () => $("matchMenu").classList.remove("show");
+["loadBtn", "loadBtn2", "mmLoad"].forEach(id => $(id).onclick = () => loadFromFolder(true));
+$("csvInput").onchange = e => { const f = [...e.target.files]; e.target.value = ""; if (f.length) loadFromFiles(f); };
+$("matchSkippedBtn").onclick = () => startMatch(lastErrors.map(r => r.it));
+$("matchQuit").onclick = () => {
+  if (match.mode === "post") { match.drag = null; selectItem(null); drawLines(); $("exitOverlay").classList.add("show"); }
+  else showMatchSummary();
+};
+$("saveSetBtn").onclick = () => { renderSaveBars(); $("saveOverlay").classList.add("show"); };
+$("saveCloseBtn").onclick = () => $("saveOverlay").classList.remove("show");
+$("pickFolderBtn").onclick = pickFolder;
+$("dlGamesBtn").onclick = () => downloadCSV(FILE_GAMES);
+$("dlErrorsBtn").onclick = () => downloadCSV(FILE_ERRORS);
+initSave();
+$("exitStay").onclick = () => $("exitOverlay").classList.remove("show");
+$("exitGo").onclick = () => { $("exitOverlay").classList.remove("show"); revealResult(); };
+$("aTableBtn").onclick = () => {
+  const t = $("aTable"), open = t.style.display === "none";
+  t.style.display = open ? "" : "none";
+  $("aTableBtn").textContent = open ? " 隱藏表格 Hide table" : " 顯示表格 Show table";
+};
+$("practiceSkippedBtn").onclick = () => startPractice(game.skipped);
+$("practiceHome").onclick = goHub;
+$("pShowBtn").onclick = practiceReveal;
+$("pKnowBtn").onclick = practiceKnow;
+$("pAgainBtn").onclick = practiceAgain;
+$("bankBtn").onclick = showBank;
+$("bankBack").onclick = goHub;
+
+document.addEventListener("keydown", e => {
+  if ($("game").classList.contains("active")) {
+    if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") { e.preventDefault(); answer(true); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); answer(false); }
+    else if (e.key === "Escape" || e.key === "p") { game.paused ? resumeGame() : pauseGame(); }
+  } else if ($("practice").classList.contains("active")) {
+    if (e.key === "ArrowRight") practiceKnow();
+    else if (e.key === "ArrowLeft") practiceAgain();
+    else if (e.key === "ArrowDown" || e.key === " ") { e.preventDefault(); practiceReveal(); }
+  }
+});
+window.addEventListener("resize", () => {
+  if (game.running && game.deck[game.idx]) fitWord($("word"), game.deck[game.idx].w);
+  if ($("match").classList.contains("active")) drawLines();
+});
+document.addEventListener("visibilitychange", () => { if (document.hidden) pauseGame(); });
+</script>
+</body>
+</html>
